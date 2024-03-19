@@ -39,3 +39,4 @@ npm run build
 npm run start
 
 # open your browser and navigate to: 'http://localhost:3000/'
+# connect a wallet using a seed given by the XRP faucet like (sEdS4f6ijKHTMK9Zkd1DuSGXxz9mpaH)
