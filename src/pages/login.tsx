@@ -7,9 +7,10 @@ import { useRouter } from 'next/router';
 
 export default function Login() {
     const [seed, setSeed] = useState('');
+    const [generatedSeed, setGeneratedSeed] = useState("");
     const [isWrongSeed, setIsWrongSeed] = useState(false);
-    const { setUserWallet } = useUser();
-    const { getWalletFromSeed } = useXRPL();
+    const { userWallet, setUserWallet } = useUser();
+    const { getWalletFromSeed, generateNewWallet } = useXRPL();
     const router = useRouter();
 
     const handleImportWallet = async () => {
@@ -29,6 +30,11 @@ export default function Login() {
         router.push('/');
     };
 
+    const handleWalletCreation = async () => {
+        const newWallet = await generateNewWallet();
+        setUserWallet(newWallet);
+        newWallet && newWallet?.seed && setGeneratedSeed(newWallet?.seed);
+    };
 
     return (
         <>
@@ -38,8 +44,9 @@ export default function Login() {
             </Head>
             <main className={styles.main}>
                 <div className={styles.containerLogin}>
-                    <h1 className={styles.titleLogin}>Import Wallet</h1>
-                    { isWrongSeed && <p className={styles.errorMessage}>Wrong seed, please check the seed that you entered !</p>}
+                    <h1 className={styles.titleLogin}>You are {userWallet ? "Connected" : "Not connected"}</h1>
+                    {isWrongSeed && <p className={styles.errorMessage}>Wrong seed, please check the seed that you entered !</p>}
+                    {generatedSeed && <p className={styles.successfulMessage}>You are connected and you succesfuly created a new wallet with the seed: {generatedSeed}. Please keep it secretly to be able to connect again !</p>}
                     <div className={styles.inputContainerLogin}>
                         <input
                             type="text"
@@ -49,6 +56,7 @@ export default function Login() {
                         />
                     </div>
                     <div className={styles.buttonContainerLogin}>
+                        <button className={styles.createButtonLogin} onClick={handleWalletCreation}>Create wallet</button>
                         <button className={styles.importButtonLogin} onClick={handleImportWallet}>Import Wallet</button>
                         <button className={styles.disconnectButtonLogin} onClick={handleDisconnect}>Disconnect</button>
                         <button onClick={() => router.back()}>Back</button>
