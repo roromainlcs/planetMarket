@@ -1,10 +1,14 @@
 import React, { createContext, useContext, useState, useEffect } from 'react';
-import { Client, Wallet, convertStringToHex, SubmittableTransaction, Request } from 'xrpl';
+import { Client, Wallet, convertStringToHex, SubmittableTransaction } from 'xrpl';
 
 interface xrplContextType {
     xrplClient: Client | undefined;
     getWalletFromSeed: (seed: string | undefined) => Promise<Wallet | undefined>;
     generateNewWallet: () => Promise<Wallet | undefined>;
+    getNFTFromWallet: (walletAddress: string) => Promise<any | undefined>;
+    getBalanceFromWallet: (walletAddress: string) => Promise<Number | undefined>;
+    mintNFT: (userWallet: Wallet, URI: string) => Promise<boolean | undefined>;
+    burnNFT: (userWallet: Wallet, NFTokenID: string) => Promise<boolean | undefined>;
 }
 
 const XRPLContext = createContext<xrplContextType | undefined>(undefined);
@@ -28,45 +32,54 @@ export const XRPLProvider: ({ children }: any) => React.JSX.Element = ({ childre
     };
 
     const generateNewWallet = async () => {
-        if (xrplClient && xrplClient !== null) {
+        if (xrplClient && xrplClient !== null && xrplClient !== undefined) {
             const wallet = (await xrplClient?.fundWallet(null, { faucetHost: undefined }))?.wallet
             return (wallet ? wallet : undefined);
         }
     };
 
-    // const mintNFT = async (userWallet: Wallet, URI: string) => {
-    //     const transaction: SubmittableTransaction = {
-    //         "TransactionType": "NFTokenMint",
-    //         "Account": userWallet?.classicAddress,
-    //         "URI": convertStringToHex("This is a new test string"),
-    //         "Flags": 8,
-    //         "TransferFee": 10000,
-    //         "NFTokenTaxon": 0
-    //     };
-    //     const tsx = await xrplClient?.submitAndWait(transaction, { wallet: userWallet });
-    //     console.log("result from nft transaction mint:", tsx);
-    // };
+    const getBalanceFromWallet = async (walletAddress: string) => {
+        const balance = await xrplClient?.getXrpBalance(walletAddress);
+        console.log("balance got from the wallet address:", balance);
+        return (balance);
+    }
 
-    // const getNFTFromWallet = async (walletAddress: string) => {
-    //     const requestData: any = {
-    //         method: "account_nfts",
-    //         account: walletAddress,
-    //     };
+    const mintNFT = async (userWallet: Wallet, URI: string) => {
+        const transaction: SubmittableTransaction = {
+            "TransactionType": "NFTokenMint",
+            "Account": userWallet?.classicAddress,
+            "URI": convertStringToHex("This is a new test string"),
+            "Flags": 8,
+            "TransferFee": 10000,
+            "NFTokenTaxon": 0
+        };
+        const tsx = await xrplClient?.submitAndWait(transaction, { wallet: userWallet });
+        console.log("result from nft transaction mint:", tsx);
+        return (tsx && tsx !== null ? true : false);
+    };
+
+    const getNFTFromWallet = async (walletAddress: string) => {
+        const requestData: any = {
+            method: "account_nfts",
+            account: walletAddress,
+        };
         
-    //     const listOfNFT = await xrplClient?.request(requestData);
-    //     console.log("list of nfts of the account:", walletAddress, "equal to:", listOfNFT);
-    // };
+        const listOfNFT: any | undefined = await xrplClient?.request(requestData);
+        console.log("list of nfts of the account:", walletAddress, "equal to:", listOfNFT?.result?.account_nfts);
+        return (listOfNFT?.result?.account_nfts ? listOfNFT?.result?.account_nfts : undefined);
+    };
 
-    // const burnNFT = async (userWallet: Wallet, NFTokenID: string) => {
-    //     const transaction: SubmittableTransaction = {
-    //         "TransactionType": "NFTokenBurn",
-    //         "Account": userWallet?.classicAddress,
-    //         "NFTokenID": NFTokenID,
-    //     };
+    const burnNFT = async (userWallet: Wallet, NFTokenID: string) => {
+        const transaction: SubmittableTransaction = {
+            "TransactionType": "NFTokenBurn",
+            "Account": userWallet?.classicAddress,
+            "NFTokenID": NFTokenID,
+        };
 
-    //     const tsx = await xrplClient?.submitAndWait(transaction, { wallet: userWallet })
-    //     console.log("result from nft transaction burn:", tsx);
-    // };
+        const tsx = await xrplClient?.submitAndWait(transaction, { wallet: userWallet })
+        console.log("result from nft transaction burn:", tsx);
+        return (tsx && tsx !== null ? true : false);
+    };
 
     useEffect(() => {
         if (xrplClient) {
@@ -95,7 +108,7 @@ export const XRPLProvider: ({ children }: any) => React.JSX.Element = ({ childre
     }, []);
 
     return (
-        <XRPLContext.Provider value={{ xrplClient, getWalletFromSeed, generateNewWallet }}>
+        <XRPLContext.Provider value={{ xrplClient, getWalletFromSeed, generateNewWallet, getNFTFromWallet, getBalanceFromWallet, mintNFT, burnNFT }}>
             {children}
         </XRPLContext.Provider>
     );

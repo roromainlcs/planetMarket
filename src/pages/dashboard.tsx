@@ -9,16 +9,39 @@ import CreationForm from '@/components/CreationForm';
 
 export default function Dashboard() {
     const [showCreationForm, setShowCreationForm] = useState(false);
+    const [userOwnedNFTs, setUserOwnedNFTs] = useState<Array<any> | undefined>(undefined);
     const router = useRouter();
     const { userWallet } = useUser();
-    const { xrplClient } = useXRPL();
+    const { getNFTFromWallet, mintNFT, burnNFT } = useXRPL();
+
+    const createNewNFT = async () => {
+        if (userWallet && userWallet !== undefined) {
+            const newNFToken = await mintNFT(userWallet, "")
+            console.log("is nft created ?:", newNFToken);
+        }
+    }
+
+    const BurnOwnedNFT = async (NFTokenID: string) => {
+        if (userWallet && userWallet !== undefined) {
+            const newNFToken = await burnNFT(userWallet, NFTokenID);
+            console.log("is nft created ?:", newNFToken);
+        }
+    }
 
     useEffect(() => {
-        if (!userWallet) {
-            router.push('/login');
+        const getNFTOwned = async () => {
+            if (userWallet !== undefined && userWallet?.classicAddress !== undefined) {
+                const NFTs: [] = await getNFTFromWallet(userWallet.classicAddress);
+                console.log("Nfts received and owned by the userWallet:", NFTs);
+                setUserOwnedNFTs(NFTs);
+            }
+        }
+
+        if (userWallet && userWallet !== undefined) {
+            console.log("user wallet into dashboard page:", userWallet);
+            getNFTOwned();
         } else {
-            // console.log("user wallet into dashboard page:", userWallet);
-            // call needed function from the xrpl context using the userwallet to sign and submit all transaction process
+            router.push('/login');
         }
     }, [userWallet, router]);
 
@@ -31,9 +54,15 @@ export default function Dashboard() {
             <main className={styles.main}>
                 <NavigationBar />
                 <p>Dashboard</p>
-                <button onClick={() => setShowCreationForm(true)}>Create Announcement</button>
-                {showCreationForm && <CreationForm onClose={() => setShowCreationForm(false)} />}
-            </main>
+                <button onClick={async () => createNewNFT()}>Create New NFT</button>
+                {
+                    userOwnedNFTs && userOwnedNFTs !== null && userOwnedNFTs !== undefined && userOwnedNFTs?.map((nft: any, index: number) =>
+                        <div key={index}>
+                            <p>This is a founded NFTs {nft?.NFTokenID}</p>
+                            <button onClick={async () => BurnOwnedNFT(nft?.NFTokenID)}>Burn the NFT</button>
+                        </div>)
+                }
+            </main >
         </>
     );
 }
