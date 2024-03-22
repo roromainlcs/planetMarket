@@ -4,6 +4,7 @@ import { useUser } from '@/contexts/userContext';
 import styles from '@/styles/Login.module.css';
 import Head from 'next/head';
 import { useRouter } from 'next/router';
+import useLocalStorage from '@/hooks/useLocalStorage';
 
 export default function Login() {
     const [loadingWallet, setLoadingWallet] = useState(false);
@@ -12,30 +13,32 @@ export default function Login() {
     const [isWrongSeed, setIsWrongSeed] = useState(false);
     const { userWallet, setUserWallet } = useUser();
     const { getWalletFromSeed, generateNewWallet } = useXRPL();
+    const { localStorageData } = useLocalStorage();
     const router = useRouter();
 
     const handleImportWallet = async () => {
-        // Random seed that we can use to connect on xrpl: sEdS4f6ijKHTMK9Zkd1DuSGXxz9mpaH
         const wallet = await getWalletFromSeed(seed);
-        if (!wallet) {
-            setIsWrongSeed(true);
-        } else {
-            console.log("wallet received and will be set");
+        if (wallet && wallet !== undefined) {
             setUserWallet(wallet);
+            wallet?.seed !== undefined && localStorageData("seed", wallet?.seed);
             router.back();
+        } else {
+            setIsWrongSeed(true);
         }
     };
 
     const handleDisconnect = () => {
         setUserWallet(undefined);
+        localStorageData("seed","");
         router.push('/');
     };
 
     const handleWalletCreation = async () => {
         setLoadingWallet(true);
-        const newWallet = await generateNewWallet();
-        setUserWallet(newWallet);
-        newWallet && newWallet?.seed && setGeneratedSeed(newWallet?.seed);
+        const wallet = await generateNewWallet();
+        setUserWallet(wallet);
+        wallet?.seed !== undefined && localStorageData("seed", wallet?.seed);
+        wallet && wallet?.seed && setGeneratedSeed(wallet?.seed);
         setLoadingWallet(false);
     };
 

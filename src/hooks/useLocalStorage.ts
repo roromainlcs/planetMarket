@@ -15,10 +15,9 @@ export default function useLocalStorage() {
 
     const localReadingData = (key: string): string | undefined => {
         try {
-            const value = get(key);
+            const value: string = get(key);
             console.log("Read the value on the given key, and got this value:", value);
-            // return (value ? value : undefined);
-            return ("");
+            return (value ? value : undefined);
         } catch (error) {
             console.log('Trying to read the key:', key, "and got this error:", error);
             return (undefined);
