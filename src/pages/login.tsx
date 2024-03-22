@@ -13,7 +13,7 @@ export default function Login() {
     const [isWrongSeed, setIsWrongSeed] = useState(false);
     const { userWallet, setUserWallet } = useUser();
     const { getWalletFromSeed, generateNewWallet } = useXRPL();
-    const { localStorageData } = useLocalStorage();
+    const { localStorageData, localDeletingData } = useLocalStorage();
     const router = useRouter();
 
     const handleImportWallet = async () => {
@@ -29,7 +29,7 @@ export default function Login() {
 
     const handleDisconnect = () => {
         setUserWallet(undefined);
-        localStorageData("seed","");
+        localDeletingData("seed");
         router.push('/');
     };
 
