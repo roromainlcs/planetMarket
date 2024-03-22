@@ -6,6 +6,7 @@ import Head from 'next/head';
 import { useRouter } from 'next/router';
 
 export default function Login() {
+    const [loadingWallet, setLoadingWallet] = useState(false);
     const [seed, setSeed] = useState('');
     const [generatedSeed, setGeneratedSeed] = useState("");
     const [isWrongSeed, setIsWrongSeed] = useState(false);
@@ -31,11 +32,23 @@ export default function Login() {
     };
 
     const handleWalletCreation = async () => {
+        setLoadingWallet(true);
         const newWallet = await generateNewWallet();
         setUserWallet(newWallet);
         newWallet && newWallet?.seed && setGeneratedSeed(newWallet?.seed);
+        setLoadingWallet(false);
     };
 
+    if (loadingWallet) {
+        return (
+            <main className={styles.main}>
+                <div className={styles.containerLogin}>
+                    <h1 className={[styles.titleLogin, styles.loadingWallet].join(' ')}>Loading your wallet...</h1>
+                    <div></div>
+                </div>
+            </main>
+        );
+    }
     return (
         <>
             <Head>
@@ -44,21 +57,33 @@ export default function Login() {
             </Head>
             <main className={styles.main}>
                 <div className={styles.containerLogin}>
-                    <h1 className={styles.titleLogin}>You are {userWallet ? "Connected" : "Not connected"}</h1>
+                    <h1 className={styles.titleLogin}>You are {userWallet ? "connected" : "not connected"}</h1>
                     {isWrongSeed && <p className={styles.errorMessage}>Wrong seed, please check the seed that you entered !</p>}
                     {generatedSeed && <p className={styles.successfulMessage}>You are connected and you succesfuly created a new wallet with the seed: {generatedSeed}. Please keep it secretly to be able to connect again !</p>}
-                    <div className={styles.inputContainerLogin}>
+                    {(userWallet &&
+                    <div className={styles.displayWalletContainer}>
+                        <p className={styles.loginText}>current wallet address:</p>
+                        <p className={styles.loginText}>{userWallet.address}</p>
+                    </div>
+                    ) || 
+                    <form className={styles.inputContainerLogin} onSubmit={handleImportWallet}>
                         <input
                             type="text"
                             value={seed}
                             onChange={(e) => setSeed(e.target.value)}
                             placeholder="Enter your seed phrase"
                         />
-                    </div>
+                    </form>
+                    }
                     <div className={styles.buttonContainerLogin}>
-                        <button className={styles.createButtonLogin} onClick={handleWalletCreation}>Create wallet</button>
-                        <button className={styles.importButtonLogin} onClick={handleImportWallet}>Import Wallet</button>
+                        {(!userWallet && 
+                        <>
+                            <button className={styles.createButtonLogin} onClick={handleWalletCreation}>Create wallet</button>
+                            <button className={styles.importButtonLogin} onClick={handleImportWallet}>Import Wallet</button>
+                        </>
+                        ) ||
                         <button className={styles.disconnectButtonLogin} onClick={handleDisconnect}>Disconnect</button>
+                        }
                         <button onClick={() => router.back()}>Back</button>
                     </div>
                 </div>
@@ -66,3 +91,4 @@ export default function Login() {
         </>
     );
 }
+

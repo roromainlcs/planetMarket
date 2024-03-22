@@ -43,13 +43,6 @@
     justify-content: space-between;
 }
 
-.buttonContainerLogin button {
-    padding: 10px 20px;
-    border: none;
-    border-radius: 4px;
-    cursor: pointer;
-}
-
 .importButtonLogin {
     background-color: #007bff;
     color: #fff;
@@ -72,9 +65,37 @@
     margin-bottom: 5px;
   }
 
-  .successfulMessage {
-    color: #000;
-    font-size: 14px;
-    margin-top: 5px;
-    margin-bottom: 5px;
+.successfulMessage {
+color: #000;
+font-size: 14px;
+margin-top: 5px;
+margin-bottom: 5px;
+}
+
+.loginText {
+    color: black;
+    width: fit-content;
+}
+
+.displayWalletContainer {
+    display: flex;
+    justify-content: space-between;
+    flex-direction: column;
+    width: calc(100% - 1rem);
+    margin: 1rem 0.5rem;
+}
+
+.loadingWallet {
+    font-weight: bold;
+    display:inline-block;
+    font-family: monospace;
+    font-size: 30px;
+    clip-path: inset(0 3ch 0 0);
+    animation: walletLoading 2s steps(4) infinite;
+}
+
+@keyframes walletLoading {
+    to {
+      clip-path: inset(0 -1ch 0 0)
+    }
   }
