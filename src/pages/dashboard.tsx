@@ -51,6 +51,7 @@ export default function Dashboard() {
             console.log("user wallet into dashboard page:", userWallet);
             getNFTOwned();
         } else {
+            console.log("user wallet is not defined")
             router.push('/login');
         }
     }, [userWallet, router, isCreatingNft, burnedNft]);
@@ -58,12 +59,12 @@ export default function Dashboard() {
     const CreatingNft = () => { //load page creating nft component
         return (
             <div className={styles.planetGifContainer}>
-                <h1>creating new planet</h1>
+                <h1>Creating new planet</h1>
                 <Image
                 src='/static/images/planet_gif1.gif'
                 width={900}
                 height={600}
-                alt='loading nex planet gif'
+                alt='loading next planet gif'
                 className={styles.planetGif}
                 />
             </div>
@@ -78,7 +79,7 @@ export default function Dashboard() {
                 src='/static/images/planet_gif2.gif'
                 width={600}
                 height={600}
-                alt='loading nex planet gif'
+                alt='burning next planet gif'
                 className={styles.planetGif}
                 />
             </div>
