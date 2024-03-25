@@ -63,7 +63,10 @@ export const XRPLProvider: ({ children }: any) => React.JSX.Element = ({ childre
             method: "account_nfts",
             account: walletAddress,
         };
-        
+        if (xrplClient && !xrplClient.isConnected()) {
+            await xrplClient.connect();
+            console.log("reconnecting client");
+        }
         const listOfNFT: any | undefined = await xrplClient?.request(requestData);
         console.log("list of nfts of the account:", walletAddress, "equal to:", listOfNFT?.result?.account_nfts);
         return (listOfNFT?.result?.account_nfts ? listOfNFT?.result?.account_nfts : undefined);
@@ -82,7 +85,7 @@ export const XRPLProvider: ({ children }: any) => React.JSX.Element = ({ childre
     };
 
     useEffect(() => {
-        if (xrplClient) {
+        if (xrplClient && !xrplClient.isConnected()) {
             xrplClient.connect();
             console.log("client connected");
         } else {
