@@ -66,6 +66,7 @@ export default function Dashboard() {
                 height={600}
                 alt='loading next planet gif'
                 className={styles.planetGif}
+                unoptimized={true}
                 />
             </div>
         );
@@ -76,11 +77,12 @@ export default function Dashboard() {
             <div className={styles.planetGifContainer}>
                 <h1>Burning the planet: <br/>{burnedNft}</h1>
                 <Image
-                src='/static/images/planet_gif2.gif'
-                width={600}
+                src='/static/images/planet_gif1.gif'
+                width={900}
                 height={600}
                 alt='burning next planet gif'
                 className={styles.planetGif}
+                unoptimized={true}
                 />
             </div>
         );
