@@ -14,7 +14,7 @@ const ListPlanetComponent: React.FC<ListNftComponentProps> = React.memo(({ marke
         <div className={styles.ListNftContainer}>
             {marketPlanets && marketPlanets.length > 0 ? (
                 marketPlanets.map((planet) => (
-                    <div key={planet.NFTokenID} onClick={() => { (setTimeout(() => { setCurrentPlanet(planet) }, 5000)), setShowPlanet(true) }}>
+                    <div key={planet.NFTokenID} onClick={() => { (setTimeout(() => { setCurrentPlanet(planet) }, 2000)), setShowPlanet(true) }}>
                         <p>Token ID: {planet.NFTokenID}</p>
                         <p>URI: {planet.URI}</p>
                         <p>Owner: {planet.Owner}</p>
