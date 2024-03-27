@@ -1,0 +1,15 @@
+
+.planetGifContainer {
+  border: none !important;
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  margin: 0rem;
+  justify-content: center;
+  align-items: center;
+}
+
+.planetGif {
+  margin: 0 0 0 0 !important;
+  cursor: default;
+}

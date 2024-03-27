@@ -4,33 +4,31 @@ import styles from "@/styles/Marketplace.module.css";
 import Head from "next/head";
 import NavigationBar from "@/components/NavigationBar";
 import Image from "next/image";
+import PlanetComponent from "@/components/Planet/planetComponent";
+import { PlanetType, PlanetComponentProps } from "@/components/Planet/planetComponent";
+import ListPlanetComponent from "@/components/listPlanet/ListPlanetComponent";
 
 export default function Marketplace() {
   const { userWallet } = useUser();
-  const [marketNfts, setMarketNfts] = useState<Array<any> | undefined>(() => {return undefined});
+  const [marketPlanets, setMarketNfts] = useState<Array<PlanetType> | undefined>(() => {return undefined});
+  const [currentPlanet, setCurrentPlanet] = useState<PlanetType | undefined>(() => {return undefined});
+  const [showPlanet, setShowPlanet] = useState<boolean>(() => {return false});
 
+  console.log("coucou");
   useEffect(() => {
     if (userWallet) {
       // console.log("user wallet into dashboard page:", userWallet);
       // call needed function from the xrpl context using the userwallet to sign and submit all transaction process
     }
   }, [userWallet]);
-
-  const LoadingPlanet = () => { //load page burning nft component
-    return (
-        <div className={styles.planetGifContainer}>
-            <Image
-            src='/static/images/planet_gif2.gif'
-            width={600}
-            height={600}
-            alt='loading gif'
-            className={styles.planetGif}
-            unoptimized={true}
-            />
-        </div>
-    );
-  }
   
+  useEffect(() => {
+    console.log("showPlanet:", showPlanet);
+    if (showPlanet === false) {
+      setCurrentPlanet(undefined);
+    }
+  }, [showPlanet, currentPlanet]);
+
   const getMarketNFTs = async () => {
     // call the xrpl context to get the nfts available on the market
     setTimeout(() => {
@@ -85,34 +83,13 @@ export default function Marketplace() {
     }, 2500);
   };
 
-  const ListNftComponent = () => {
-    return (
-      <div className={styles.ListNftContainer}>
-        {
-          marketNfts && marketNfts.length > 0 ? (marketNfts.map((nft) => {
-            return (
-              <div key={nft.NFTokenID}>
-                <p>Token ID: {nft.NFTokenID}</p>
-                <p>URI: {nft.URI}</p>
-                <p>Owner: {nft.Owner}</p>
-                <p>Name: {nft.Name}</p>
-                <p>Discovery date: {nft.discovery_date}</p>
-                <div className={styles.planetLocation}>
-                  <p>Location:<br/>Right ascension: {nft.planetary_system_location.right_ascension}</p>
-                  <p>Declination: {nft.planetary_system_location.declination}</p>
-                </div>
-              </div>
-            );
-          })) : <LoadingPlanet/>
-        }
-      </div>
-    );
-  };
-
   useEffect(() => {
-    if (!marketNfts || marketNfts === undefined || marketNfts.length === 0)
+    if (!marketPlanets || marketPlanets === undefined || marketPlanets.length === 0)
       getMarketNFTs();
   }); 
+
+
+
   return (
     <>
       <Head>
@@ -124,7 +101,8 @@ export default function Marketplace() {
       <main className={styles.main}>
         <NavigationBar isMarketPlace />
         <p>Marketplace</p>
-        <ListNftComponent/>
+        {showPlanet && <PlanetComponent planet={currentPlanet} setShowPlanet={setShowPlanet}/>}
+        <ListPlanetComponent marketPlanets={marketPlanets} setCurrentPlanet={setCurrentPlanet} setShowPlanet={setShowPlanet}/>
       </main>
     </>
   );

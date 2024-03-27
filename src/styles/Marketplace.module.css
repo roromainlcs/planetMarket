@@ -27,24 +27,14 @@
   border: solid 2px #007bff;
 }
 
+.ListNftContainer > div {
+  cursor: pointer;
+}
+
 .ListNftContainer * {
   margin: 1rem;
 }
 
 .planetLocation {
   border: solid 2px #007bff;
-}
-
-.planetGifContainer {
-  border: none !important;
-  display: flex;
-  flex-direction: column;
-  height: 75%;
-  margin: 0rem;
-}
-
-.planetGif {
-  height: calc(100%);
-  width: auto;
-  margin: 0 0 0 0 !important;
 }
