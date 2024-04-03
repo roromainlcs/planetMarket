@@ -1,39 +1,43 @@
-import axios from "axios";
+import { create, CID } from 'ipfs-http-client';
 
 export default function useIPFS() {
+    const ipfs = create({ host: '127.0.0.1', port: 5001, protocol: 'http' });
 
     const uploadFileOnIPFS = async (file: File): Promise<string> => {
         try {
-            const formData = new FormData();
-            formData.append('file', file);
+            const response = await ipfs.add(file);
+            return (response?.cid?.toString());
 
-            const response = await axios.post('/api/uploadOnIPFS', formData);
-            return (response && response !== null ? response.data.hash : '');
         } catch (error) {
             console.log('error from the uploadFileOnIPFS function:', error);
             return ('')
         }
     };
 
-    const pinFileOnIFPS = async (hash: string): Promise<boolean> => {
+    const pinFileOnIFPS = async (hash: string): Promise<string | undefined> => {
         try {
-            const response = await axios.post('/api/pinOnIPFS', hash);
-
-            return (response && response !== null ? response.data.pinned : false);
+            const cid = CID.parse(hash);
+            const response = await ipfs.pin.add(cid);
+            return (response?.toString());
         } catch (error) {
             console.log('error from the pinOnIPFS function:', error);
-            return (false);
+            return (undefined);
         }
     };
 
-    const retrieveFileOnIPFS = async (hash: string): Promise<string> => {
+    const retrieveFileOnIPFS = async (hash: string): Promise<string | undefined> => {
         try {
-            const response = await axios.post('/api/retrieveFromIPFS', hash);
+            const stream = ipfs.cat(hash);
+            let fileData = '';
+            
+            for await (const chunk of stream) {
+                fileData += chunk.toString();
+            }
 
-            return (response && response !== null ? response.data.data : '');
+            return (fileData);
         } catch (error) {
             console.log('error from the retrieve from ipfs function:', error);
-            return ('')
+            return (undefined)
         }
     };
 

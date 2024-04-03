@@ -1,18 +1,73 @@
-import { useEffect } from "react";
-import { useUser } from "@/contexts/userContext";
+import { useEffect, useState } from "react";
 import styles from "@/styles/Marketplace.module.css";
 import Head from "next/head";
 import NavigationBar from "@/components/NavigationBar";
+import PlanetComponent from "@/components/Planet/planetComponent";
+import { PlanetType } from "@/components/Planet/planetComponent";
+import ListPlanetComponent from "@/components/listPlanet/ListPlanetComponent";
 
 export default function Marketplace() {
-  const { userWallet } = useUser();
+  const [marketPlanets, setMarketNfts] = useState<Array<PlanetType> | undefined>(undefined);
+  const [currentPlanet, setCurrentPlanet] = useState<PlanetType | undefined>(undefined);
+  const [showPlanet, setShowPlanet] = useState<boolean>(false);
+
+  const getMarketNFTs = async () => {
+    // call the back using the API to get all planet offers (planetoffers = await getPlanetOffers() -> will be into the useBackend hook)
+    setTimeout(() => {
+      setMarketNfts(
+        [
+          {
+            "NFTokenID": "1",
+            "URI": "https://ipfs.io/ipfs/QmZz2fQ2yqV9wX1a8QWx8G7tQ1m6JfVH1F6JG1",
+            "Owner": "rHb9CJAWyB4rj91VRWn96DkukG4bwdtyTh",
+            "Name": "le soleil",
+            "discovery_date": "2014-04-17",
+            "planetary_system_location": {
+              "right_ascension": "19h 54m 36.6519s",
+              "declination": "+43° 57' 18.081\""
+            }
+          },
+          {
+            "NFTokenID": "2",
+            "URI": "https://ipfs.io/ipfs/QmZz2fQ2yqV9wX1a8QWx8G7tQ1m6JfVH1F6JG1",
+            "Owner": "rHb9CJAWyB4rj91VRWn96DkukG4bwdtyTh",
+            "Name": "le soleil",
+            "discovery_date": "2014-04-17",
+            "planetary_system_location": {
+              "right_ascension": "19h 54m 36.6519s",
+              "declination": "+43° 57' 18.081\""
+            }
+          },
+          {
+            "NFTokenID": "3",
+            "URI": "https://ipfs.io/ipfs/QmZz2fQ2yqV9wX1a8QWx8G7tQ1m6JfVH1F6JG1",
+            "Owner": "rHb9CJAWyB4rj91VRWn96DkukG4bwdtyTh",
+            "Name": "le soleil",
+            "discovery_date": "2014-04-17",
+            "planetary_system_location": {
+              "right_ascension": "19h 54m 36.6519s",
+              "declination": "+43° 57' 18.081\""
+            }
+          },
+          {
+            "NFTokenID": "4",
+            "URI": "https://ipfs.io/ipfs/QmZz2fQ2yqV9wX1a8QWx8G7tQ1m6JfVH1F6JG1",
+            "Owner": "rHb9CJAWyB4rj91VRWn96DkukG4bwdtyTh",
+            "Name": "le soleil",
+            "discovery_date": "2014-04-17",
+            "planetary_system_location": {
+              "right_ascension": "19h 54m 36.6519s",
+              "declination": "+43° 57' 18.081\""
+            }
+          }
+        ]
+      )
+    }, 2500);
+  };
 
   useEffect(() => {
-    if (userWallet) {
-      // console.log("user wallet into dashboard page:", userWallet);
-      // call needed function from the xrpl context using the userwallet to sign and submit all transaction process
-    }
-  }, [userWallet]);
+    (!marketPlanets || marketPlanets === undefined || marketPlanets.length === 0) && getMarketNFTs();
+  }, [marketPlanets]);
 
   return (
     <>
@@ -25,6 +80,8 @@ export default function Marketplace() {
       <main className={styles.main}>
         <NavigationBar isMarketPlace />
         <p>Marketplace</p>
+        {showPlanet && <PlanetComponent planet={currentPlanet} onClickEvent={() => { setShowPlanet(false), setCurrentPlanet(undefined) }} />}
+        <ListPlanetComponent marketPlanets={marketPlanets} setCurrentPlanet={setCurrentPlanet} setShowPlanet={setShowPlanet} />
       </main>
     </>
   );

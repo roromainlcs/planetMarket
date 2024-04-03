@@ -21,7 +21,6 @@ export const useUser = () => {
 export const UserProvider: ({ children }: any) => React.JSX.Element = ({ children }: any) => {
   const [userWallet, setUserWallet] = useState<Wallet | undefined>(undefined);
   const [localSeed, setLocalSeed] = useState<string | undefined>(undefined);
-  const [userBalance, setUserBalance] = useState<number | undefined>(undefined);
   const { localReadingData } = useLocalStorage();
   const { getWalletFromSeed } = useXRPL();
 
@@ -38,16 +37,8 @@ export const UserProvider: ({ children }: any) => React.JSX.Element = ({ childre
     localSeed && localSeed !== undefined && localSeed?.length === 31 && setWalletFromLocalSeed();
   }, [localSeed]);
 
-  useEffect(() => {
-    const getUserBalance = async () => {
-      // const newBalance = await getBalanceFromWallet(userWallet);
-      // newBalance && newBalance !== undefined && setUserBalance(newBalance);
-    }
-    userWallet && userWallet !== null && getUserBalance();
-  }, [userWallet]);
-
   return (
-    <UserContext.Provider value={{ userWallet, setUserWallet }}>
+    <UserContext.Provider value={{ userWallet, setUserWallet}}>
       {children}
     </UserContext.Provider>
   );

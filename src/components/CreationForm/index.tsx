@@ -1,6 +1,8 @@
 import { useState } from 'react';
 import styles from './styles.module.css';
 import useIPFS from '@/hooks/useIPFS';
+import { useUser } from '@/contexts/userContext';
+import { useXRPL } from '@/contexts/xrplContext';
 
 type FormFieldData = {
     images: File[],
@@ -14,7 +16,10 @@ type FormFieldData = {
 export default function CreationForm({ onClose }: any) {
     const categories = ['Electromenager', 'Jeux vidéo', 'Vetements'];
     const [error, setError] = useState("");
-    const { uploadFileOnIPFS, pinFileOnIFPS, retrieveFileOnIPFS } = useIPFS();
+    const { userWallet } = useUser();
+    const { mintNFT } = useXRPL();
+    const [isCreatingNft, setIsCreatingNft] = useState(false);
+    const { uploadFileOnIPFS, pinFileOnIFPS } = useIPFS();
     const [formData, setFormData] = useState<FormFieldData>({
         images: [],
         title: '',
@@ -22,17 +27,6 @@ export default function CreationForm({ onClose }: any) {
         category: '',
         price: 0,
     });
-
-    function isFormEmpty(formData: FormFieldData): boolean {
-        for (const key in formData) {
-            if (formData.hasOwnProperty(key)) {
-                if (formData[key].toString().trim() === '') {
-                    return true;
-                }
-            }
-        }
-        return false;
-    }
 
     const handleImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
         const files = e.target.files;
@@ -42,19 +36,26 @@ export default function CreationForm({ onClose }: any) {
         }
     };
 
-    const handleSubmit = async (e: any) => {
-        e.preventDefault();
-        if (isFormEmpty(formData) || formData.price < 0.01) {
-            setError("Each field of the form is mandatory")
-        } else {
-            console.log("formData:", formData);
+    const handleSubmit = async () => {
+        try {
+            console.log("handlesubmit:", formData);
             const test = { test: "1", history: "4701374014210", value: 'banana' };
+            console.log("test:", test);
             const jsonFile = new File([JSON.stringify(test)], "announcement.json", { type: 'application/json' });
+            console.log("jsonFile:", jsonFile);
 
             const jsonFileCID = await uploadFileOnIPFS(jsonFile);
+            console.log("jsonFileCID:", jsonFileCID);
 
             const isPinned = await pinFileOnIFPS(jsonFileCID);
             console.log("is json file pinned:", isPinned);
+
+            if (isPinned !== undefined && isPinned?.length > 0 && userWallet !== undefined) {
+                const newNFToken = await mintNFT(userWallet, jsonFileCID);
+                console.log("is nft created ?:", newNFToken);
+            }
+        } catch (error) {
+            console.log('error handle submit:', error);
         }
     };
 
@@ -62,7 +63,6 @@ export default function CreationForm({ onClose }: any) {
         <div className={styles.overlay}>
             <div className={styles.formContainer}>
                 <h2>Create Announcement</h2>
-                <form onSubmit={handleSubmit}>
                     <div className={styles.formGroup}>
                         <label htmlFor="images">Image</label>
                         <input
@@ -88,21 +88,6 @@ export default function CreationForm({ onClose }: any) {
                         ></textarea>
                     </div>
                     <div className={styles.formGroup}>
-                        <label htmlFor="category">Category</label>
-                        <select
-                            id="category"
-                            value={formData.category}
-                            onChange={(e) => setFormData({ ...formData, category: e.target.value })}
-                        >
-                            <option value="">Select a category</option>
-                            {categories.map((category, index) => (
-                                <option key={index} value={category}>
-                                    {category}
-                                </option>
-                            ))}
-                        </select>
-                    </div>
-                    <div className={styles.formGroup}>
                         <label htmlFor="price">Price</label>
                         <input
                             type="number"
@@ -112,10 +97,9 @@ export default function CreationForm({ onClose }: any) {
                         />
                     </div>
                     <div className={styles.buttonGroup}>
-                        <button type="submit">Submit</button>
+                        <button onClick={async () => await handleSubmit()}>Submit</button>
                         <button onClick={onClose}>Close</button>
                     </div>
-                </form>
             </div>
         </div>
     );
