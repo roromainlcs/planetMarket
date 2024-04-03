@@ -1,36 +1,18 @@
 import { useEffect, useState } from "react";
-import { useUser } from "@/contexts/userContext";
 import styles from "@/styles/Marketplace.module.css";
 import Head from "next/head";
 import NavigationBar from "@/components/NavigationBar";
-import Image from "next/image";
 import PlanetComponent from "@/components/Planet/planetComponent";
-import { PlanetType, PlanetComponentProps } from "@/components/Planet/planetComponent";
+import { PlanetType } from "@/components/Planet/planetComponent";
 import ListPlanetComponent from "@/components/listPlanet/ListPlanetComponent";
 
 export default function Marketplace() {
-  const { userWallet } = useUser();
-  const [marketPlanets, setMarketNfts] = useState<Array<PlanetType> | undefined>(() => {return undefined});
-  const [currentPlanet, setCurrentPlanet] = useState<PlanetType | undefined>(() => {return undefined});
-  const [showPlanet, setShowPlanet] = useState<boolean>(() => {return false});
-
-  console.log("coucou");
-  useEffect(() => {
-    if (userWallet) {
-      // console.log("user wallet into dashboard page:", userWallet);
-      // call needed function from the xrpl context using the userwallet to sign and submit all transaction process
-    }
-  }, [userWallet]);
-  
-  useEffect(() => {
-    console.log("showPlanet:", showPlanet);
-    if (showPlanet === false) {
-      setCurrentPlanet(undefined);
-    }
-  }, [showPlanet, currentPlanet]);
+  const [marketPlanets, setMarketNfts] = useState<Array<PlanetType> | undefined>(undefined);
+  const [currentPlanet, setCurrentPlanet] = useState<PlanetType | undefined>(undefined);
+  const [showPlanet, setShowPlanet] = useState<boolean>(false);
 
   const getMarketNFTs = async () => {
-    // call the xrpl context to get the nfts available on the market
+    // call the back using the API to get all planet offers (planetoffers = await getPlanetOffers() -> will be into the useBackend hook)
     setTimeout(() => {
       setMarketNfts(
         [
@@ -84,11 +66,8 @@ export default function Marketplace() {
   };
 
   useEffect(() => {
-    if (!marketPlanets || marketPlanets === undefined || marketPlanets.length === 0)
-      getMarketNFTs();
-  }); 
-
-
+    (!marketPlanets || marketPlanets === undefined || marketPlanets.length === 0) && getMarketNFTs();
+  }, [marketPlanets]);
 
   return (
     <>
@@ -101,8 +80,8 @@ export default function Marketplace() {
       <main className={styles.main}>
         <NavigationBar isMarketPlace />
         <p>Marketplace</p>
-        {showPlanet && <PlanetComponent planet={currentPlanet} setShowPlanet={setShowPlanet}/>}
-        <ListPlanetComponent marketPlanets={marketPlanets} setCurrentPlanet={setCurrentPlanet} setShowPlanet={setShowPlanet}/>
+        {showPlanet && <PlanetComponent planet={currentPlanet} onClickEvent={() => { setShowPlanet(false), setCurrentPlanet(undefined) }} />}
+        <ListPlanetComponent marketPlanets={marketPlanets} setCurrentPlanet={setCurrentPlanet} setShowPlanet={setShowPlanet} />
       </main>
     </>
   );

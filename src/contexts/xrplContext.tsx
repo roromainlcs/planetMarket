@@ -48,7 +48,7 @@ export const XRPLProvider: ({ children }: any) => React.JSX.Element = ({ childre
         const transaction: SubmittableTransaction = {
             "TransactionType": "NFTokenMint",
             "Account": userWallet?.classicAddress,
-            "URI": convertStringToHex("This is a new test string"),
+            "URI": convertStringToHex(URI),
             "Flags": 8,
             "TransferFee": 10000,
             "NFTokenTaxon": 0

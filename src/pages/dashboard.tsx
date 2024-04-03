@@ -7,38 +7,55 @@ import Head from 'next/head';
 import NavigationBar from '@/components/NavigationBar';
 import CreationForm from '@/components/CreationForm';
 import Image from "next/image";
-
+import { convertHexToString } from 'xrpl';
 
 export default function Dashboard() {
     const [showCreationForm, setShowCreationForm] = useState(false);
     const [userOwnedNFTs, setUserOwnedNFTs] = useState<Array<any> | undefined>(undefined);
     const router = useRouter();
     const { userWallet } = useUser();
-    const { getNFTFromWallet, mintNFT, burnNFT } = useXRPL();
-    const [isCreatingNft, setIsCreatingNft] = useState(false);
-    const [burnedNft, setBurnedNft] = useState('');
-
-    const createNewNFT = async () => {
-        if (userWallet && userWallet !== undefined) {
-            setIsCreatingNft(true);
-            const newNFToken = await mintNFT(userWallet, "")
-            console.log("is nft created ?:", newNFToken);
-            setIsCreatingNft(false);
-        }
-    }
+    const { getNFTFromWallet, burnNFT } = useXRPL();
 
     const BurnOwnedNFT = async (NFTokenID: string) => {
         if (userWallet && userWallet !== undefined) {
-            setBurnedNft(NFTokenID);
             const newNFToken = await burnNFT(userWallet, NFTokenID);
             console.log("is nft burned ?:", newNFToken);
-            setBurnedNft('');
         }
     }
 
+    // const CreatingNft = () => { //load page creating nft component
+    //     return (
+    //         <div className={styles.planetGifContainer}>
+    //             <h1>Creating new planet</h1>
+    //             <Image
+    //             src='/static/images/planet_gif1.gif'
+    //             width={900}
+    //             height={600}
+    //             alt='loading next planet gif'
+    //             className={styles.planetGif}
+    //             unoptimized={true}
+    //             />
+    //         </div>
+    //     );
+    // }
+
+    // const BurningNft = () => { //load page burning nft component
+    //     return (
+    //         <div className={styles.planetGifContainer}>
+    //             <h1>Burning the planet: <br/>{burnedNft}</h1>
+    //             <Image
+    //             src='/static/images/planet_gif1.gif'
+    //             width={900}
+    //             height={600}
+    //             alt='burning next planet gif'
+    //             className={styles.planetGif}
+    //             unoptimized={true}
+    //             />
+    //         </div>
+    //     );
+    // }
+
     useEffect(() => {
-        if (isCreatingNft || burnedNft != '') //refresh only when nft is created and not right before same for burned nft
-            return;
         const getNFTOwned = async () => {
             if (userWallet !== undefined && userWallet?.classicAddress !== undefined) {
                 const NFTs: [] = await getNFTFromWallet(userWallet.classicAddress);
@@ -51,42 +68,19 @@ export default function Dashboard() {
             console.log("user wallet into dashboard page:", userWallet);
             getNFTOwned();
         } else {
-            console.log("user wallet is not defined")
-            router.push('/login');
+            // setTimeout(() => {
+            //     console.log("user wallet is not defined")
+            //     router.push('/login');
+            // }, 2000);
         }
-    }, [userWallet, router, isCreatingNft, burnedNft]);
+    }, [userWallet, router]);
 
-    const CreatingNft = () => { //load page creating nft component
-        return (
-            <div className={styles.planetGifContainer}>
-                <h1>Creating new planet</h1>
-                <Image
-                src='/static/images/planet_gif1.gif'
-                width={900}
-                height={600}
-                alt='loading next planet gif'
-                className={styles.planetGif}
-                unoptimized={true}
-                />
-            </div>
-        );
-    }
-
-    const BurningNft = () => { //load page burning nft component
-        return (
-            <div className={styles.planetGifContainer}>
-                <h1>Burning the planet: <br/>{burnedNft}</h1>
-                <Image
-                src='/static/images/planet_gif1.gif'
-                width={900}
-                height={600}
-                alt='burning next planet gif'
-                className={styles.planetGif}
-                unoptimized={true}
-                />
-            </div>
-        );
-    }
+    useEffect(() => {
+        userOwnedNFTs && userOwnedNFTs !== undefined && userOwnedNFTs.map((nft:any, index: number) => {
+            console.log("nft numero", index, "equal to:", nft);
+            console.log("converted uri", convertHexToString(nft?.URI));
+        })
+    }, [userOwnedNFTs]);
 
     return (
         <>
@@ -97,7 +91,8 @@ export default function Dashboard() {
             <main className={styles.main}>
                 <NavigationBar />
                 <p>Dashboard</p>
-                <button onClick={async () => createNewNFT()}>Create New NFT</button>
+                <button onClick={() => setShowCreationForm(true)}>Create Announcement</button>
+                {showCreationForm && <CreationForm onClose={() => setShowCreationForm(false)} />}
                 {
                     userOwnedNFTs && userOwnedNFTs !== null && userOwnedNFTs !== undefined && userOwnedNFTs?.map((nft: any, index: number) =>
                         <div key={index}>
@@ -105,8 +100,6 @@ export default function Dashboard() {
                             <button onClick={async () => BurnOwnedNFT(nft?.NFTokenID)}>Burn the NFT</button>
                         </div>)
                 }
-                {isCreatingNft && <CreatingNft/>}
-                {burnedNft !== '' && <BurningNft/>}
             </main >
         </>
     );

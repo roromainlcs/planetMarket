@@ -21,3 +21,13 @@
   margin-left: 10px;
   cursor: pointer;
 }
+
+.left {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+}
+
+.left p {
+  margin-left: 10px;
+}

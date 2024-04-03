@@ -6,8 +6,6 @@ import { useXRPL } from './xrplContext';
 interface UserContextType {
   userWallet: Wallet | undefined
   setUserWallet: React.Dispatch<React.SetStateAction<Wallet | undefined>>;
-  // userBalance: number | undefined;
-  // setUserBalance: React.Dispatch<React.SetStateAction<number | undefined>>;
 }
 
 const UserContext = createContext<UserContextType | undefined>(undefined);
@@ -23,7 +21,6 @@ export const useUser = () => {
 export const UserProvider: ({ children }: any) => React.JSX.Element = ({ children }: any) => {
   const [userWallet, setUserWallet] = useState<Wallet | undefined>(undefined);
   const [localSeed, setLocalSeed] = useState<string | undefined>(undefined);
-  const [userBalance, setUserBalance] = useState<number | undefined>(undefined);
   const { localReadingData } = useLocalStorage();
   const { getWalletFromSeed } = useXRPL();
 
@@ -41,7 +38,7 @@ export const UserProvider: ({ children }: any) => React.JSX.Element = ({ childre
   }, [localSeed]);
 
   return (
-    <UserContext.Provider value={{ userWallet, setUserWallet /*, userBalance, setUserBalance */ }}>
+    <UserContext.Provider value={{ userWallet, setUserWallet}}>
       {children}
     </UserContext.Provider>
   );

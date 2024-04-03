@@ -15,12 +15,12 @@ interface PlanetType {
 
 interface PlanetComponentProps {
     planet: PlanetType | undefined,
-    setShowPlanet: React.Dispatch<React.SetStateAction<boolean>>
+    onClickEvent: () => void;
 }
 
-const PlanetComponent: React.FC<PlanetComponentProps> = ({ planet, setShowPlanet }) => {
+const PlanetComponent: React.FC<PlanetComponentProps> = ({ planet, onClickEvent }) => {
     return(
-      <div className={styles.planetBg} onClick={() => setShowPlanet(false)}>
+      <div className={styles.planetBg} onClick={onClickEvent}>
         <div className={styles.planetContainer} onClick={(event) => {event.stopPropagation();}}>
         {(planet !== undefined && 
           <>
