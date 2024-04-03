@@ -1,11 +1,23 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import { useUser } from '@/contexts/userContext';
 import styles from "./styles.module.css";
 import { useRouter } from 'next/router';
+import { useXRPL } from '@/contexts/xrplContext';
 
 const NavigationBar = ({ isMarketPlace }: any) => {
     const router = useRouter();
-    const { userWallet } = useUser();
+    const { userWallet /*, setUserBalance */ } = useUser();
+    const { getBalanceFromWallet, xrplClient } = useXRPL();
+
+    // useEffect(() => {
+    //     const getUserBalance = async () => {
+    //         if (userWallet && userWallet !== undefined) {
+    //             const newBalance = await getBalanceFromWallet(userWallet?.classicAddress);
+    //             console.log("balance of user:", newBalance);
+    //         }
+    //     }
+    //     userWallet && userWallet !== null && xrplClient?.isConnected() && getUserBalance();
+    // }, [userWallet, xrplClient]);
 
     return (
         <nav className={styles.navbar}>
@@ -23,7 +35,7 @@ const NavigationBar = ({ isMarketPlace }: any) => {
                 ) : (
                     <button onClick={() => router.push('/')}>Go to Marketplace</button>
                 )}
-                
+
             </div>
         </nav>
     );
