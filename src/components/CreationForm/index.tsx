@@ -10,11 +10,9 @@ interface FormFieldData {
     name: string;
     images?: File[];
     discovery_date: string;
-    price?: number;
-    location: {
-        right_ascension: string;
-        declination: string;
-    }
+    price: number;
+    right_ascension: string;
+    declination: string;
 }
 
 export default function CreationForm({ onClose }: any) {
@@ -28,10 +26,8 @@ export default function CreationForm({ onClose }: any) {
         name: '',
         discovery_date: '',
         price: 0,
-        location: {
-            right_ascension: '',
-            declination: '',
-        }
+        right_ascension: '',
+        declination: '',
     });
 
     const handleImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -115,15 +111,15 @@ export default function CreationForm({ onClose }: any) {
                         <TimePicker className={styles.timePicker} 
                         disableClock={true}
                         maxDetail='second'
-                        value={formData.location.right_ascension}
+                        value={formData.right_ascension}
                         clearIcon={null}
-                        onChange={(time) => setFormData({ ...formData, location: { ...formData.location, right_ascension: (time !== null && time) || "00:00:00" } })}/>
+                        onChange={(time) => setFormData({ ...formData, right_ascension: (time !== null && time) || "00:00:00" })}/>
                         <label htmlFor="declination">declination</label>
                         <input
                             placeholder={"-62° 40\" 46.0'"}
                             type="text"
-                            value={formData.location.declination}
-                            onChange={(e) => isValidDeclination(e.target.value) && setFormData({ ...formData, location: { ...formData.location, declination: e.target.value } })}
+                            value={formData.declination}
+                            onChange={(e) => isValidDeclination(e.target.value) && setFormData({ ...formData, declination: e.target.value })}
                         />
                         {declinationFormatError !== "" && <p className={styles.errorMessage}>{declinationFormatError}</p>}
 
