@@ -9,21 +9,22 @@ interface ListNftComponentProps {
     setShowPlanet: (showPlanet: boolean) => void;
 }
 
-const ListPlanetComponent: React.FC<ListNftComponentProps> = React.memo(({ marketPlanets, setCurrentPlanet, setShowPlanet }) => {
+const ListMarketPlanetsComponent: React.FC<ListNftComponentProps> = React.memo(({ marketPlanets, setCurrentPlanet, setShowPlanet }) => {
     return (
         <div className={styles.ListNftContainer}>
             {marketPlanets && marketPlanets.length > 0 ? (
                 marketPlanets.map((planet) => (
-                    <div key={planet.NFTokenID} onClick={() => { (setTimeout(() => { setCurrentPlanet(planet) }, 2000)), setShowPlanet(true) }}>
+                    <div key={planet.NFTokenID} onClick={() => { (setTimeout(() => { setCurrentPlanet(planet) }, 500)), setShowPlanet(true) }}>
                         <p>Token ID: {planet.NFTokenID}</p>
                         <p>URI: {planet.URI}</p>
                         <p>Owner: {planet.Owner}</p>
                         <p>Name: {planet.Name}</p>
                         <p>Discovery date: {planet.discovery_date}</p>
                         <div className={styles.planetLocation}>
-                            <p>Location:<br/>Right ascension: {planet.planetary_system_location.right_ascension}</p>
-                            <p>Declination: {planet.planetary_system_location.declination}</p>
+                            <p>Location:<br/>Right ascension: {planet.right_ascension}</p>
+                            <p>Declination: {planet.declination}</p>
                         </div>
+                        <p>price: {planet.price}</p>
                     </div>
                 ))
             ) : <LoadingPlanet />}
@@ -31,4 +32,4 @@ const ListPlanetComponent: React.FC<ListNftComponentProps> = React.memo(({ marke
     );
 });
 
-export default ListPlanetComponent;
+export default ListMarketPlanetsComponent;

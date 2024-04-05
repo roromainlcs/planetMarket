@@ -29,6 +29,7 @@
 
 .ListNftContainer > div {
   cursor: pointer;
+  width: 45%;
 }
 
 .ListNftContainer * {

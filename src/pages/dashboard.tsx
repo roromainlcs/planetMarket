@@ -91,7 +91,7 @@ export default function Dashboard() {
             <main className={styles.main}>
                 <NavigationBar />
                 <p>Dashboard</p>
-                <button onClick={() => setShowCreationForm(true)}>Create Announcement</button>
+                <button onClick={() => setShowCreationForm(true)}>Create Planet</button>
                 {showCreationForm && <CreationForm onClose={() => setShowCreationForm(false)} />}
                 {
                     userOwnedNFTs && userOwnedNFTs !== null && userOwnedNFTs !== undefined && userOwnedNFTs?.map((nft: any, index: number) =>
