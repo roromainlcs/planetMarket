@@ -67,6 +67,7 @@ export default function CreationForm({ onClose }: any) {
 
     function isValidDeclination (declination: string) {
         const raRegex = /^[+-]?(90(?!.*[1-9])|[0-8]?[0-9]?)(?:°|:|\s)\s*(60(?!.*[1-9])|[0-5]?[0-9])(?:\'|:|\s)\s*([0-5]?[0-9]\.\d+)(?:\")?/;
+        console.log(raRegex.test(declination));
         if (declination === "" || declination === undefined || raRegex.test(declination))
             setDeclinationFormatError("");
         else if (!raRegex.test(declination))
@@ -119,7 +120,7 @@ export default function CreationForm({ onClose }: any) {
                         onChange={(time) => setFormData({ ...formData, location: { ...formData.location, right_ascension: (time !== null && time) || "00:00:00" } })}/>
                         <label htmlFor="declination">declination</label>
                         <input
-                            placeholder={"-62° 40' 46\""}
+                            placeholder={"-62° 40\" 46.0'"}
                             type="text"
                             value={formData.location.declination}
                             onChange={(e) => isValidDeclination(e.target.value) && setFormData({ ...formData, location: { ...formData.location, declination: e.target.value } })}
