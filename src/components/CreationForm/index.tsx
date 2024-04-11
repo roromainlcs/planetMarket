@@ -5,56 +5,38 @@ import { useUser } from '@/contexts/userContext';
 import { useXRPL } from '@/contexts/xrplContext';
 import { set } from 'local-storage';
 import TimePicker from 'react-time-picker';
-
-interface FormFieldData {
-    name: string;
-    images?: File[];
-    discovery_date: string;
-    price: number;
-    right_ascension: string;
-    declination: string;
-}
+import { nftUriType } from '@/contexts/xrplContext';
 
 export default function CreationForm({ onClose }: any) {
     const [error, setError] = useState("");
     const { userWallet } = useUser();
     const { mintNFT } = useXRPL();
     const [isCreatingNft, setIsCreatingNft] = useState(false);
-    const { uploadFileOnIPFS, pinFileOnIFPS } = useIPFS();
     const [declinationFormatError, setDeclinationFormatError] = useState("");
-    const [formData, setFormData] = useState<FormFieldData>({
+    const [formData, setFormData] = useState<nftUriType>({
         name: '',
         discovery_date: '',
-        price: 0,
         right_ascension: '',
         declination: '',
     });
 
-    const handleImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-        const files = e.target.files;
-        if (files) {
-            const selectedImages = Array.from(files);
-            setFormData({ ...formData, images: selectedImages });
-        }
-    };
+    // const handleImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    //     const files = e.target.files;
+    //     if (files) {
+    //         const selectedImages = Array.from(files);
+    //         setFormData({ ...formData, images: selectedImages });
+    //     }
+    // };
 
     const handleSubmit = async () => {
         try {
+            setIsCreatingNft(true);
             console.log("handlesubmit:", formData);
-            const test = { test: "1", history: "4701374014210", value: 'banana' };
-            console.log("test:", test);
-            const jsonFile = new File([JSON.stringify(test)], "announcement.json", { type: 'application/json' });
-            console.log("jsonFile:", jsonFile);
-
-            const jsonFileCID = await uploadFileOnIPFS(jsonFile);
-            console.log("jsonFileCID:", jsonFileCID);
-
-            const isPinned = await pinFileOnIFPS(jsonFileCID);
-            console.log("is json file pinned:", isPinned);
-
-            if (isPinned !== undefined && isPinned?.length > 0 && userWallet !== undefined) {
-                const newNFToken = await mintNFT(userWallet, jsonFileCID);
-                console.log("is nft created ?:", newNFToken);
+            if (userWallet !== undefined) {
+                mintNFT(userWallet, formData).then((res) => {
+                console.log("is nft created ?:", res);
+                setIsCreatingNft(false);
+                });
             }
         } catch (error) {
             console.log('error handle submit:', error);
@@ -75,7 +57,7 @@ export default function CreationForm({ onClose }: any) {
         <div className={styles.overlay}>
             <div className={styles.formContainer}>
                 <h2>Create Announcement</h2>
-                    <div className={styles.formGroup}>
+                    {/* <div className={styles.formGroup}>
                         <label className={styles.dateLabel} htmlFor="images">Images</label>
                         <input
                             type="file"
@@ -83,7 +65,7 @@ export default function CreationForm({ onClose }: any) {
                             accept=".png, .jpg"
                             onChange={handleImageChange}
                         />
-                    </div>
+                    </div> */}
                     <div className={styles.formGroup}>
                         <label htmlFor="name">Name</label>
                         <input
@@ -98,13 +80,13 @@ export default function CreationForm({ onClose }: any) {
                             value={formData.discovery_date}
                             onChange={(e) => setFormData({ ...formData, discovery_date: e.target.value })}
                         />
-                        <label htmlFor="price">Price</label>
+                        {/* <label htmlFor="price">Price</label>
                         <input
                             type="number"
                             step="0.01"
                             value={formData.price}
                             onChange={(e) => setFormData({ ...formData, price: parseFloat(e.target.value) })}
-                        />
+                        /> */}
                     </div>
                     <div className={styles.formGroup}>
                         <label htmlFor="right_ascension">Right ascension</label>

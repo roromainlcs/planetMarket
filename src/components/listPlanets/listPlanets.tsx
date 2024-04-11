@@ -4,16 +4,17 @@ import LoadingPlanet from "@/components/LoadingPlanet/loadingPlanet";
 import { PlanetType } from '../Planet/planetComponent';
 
 interface ListNftComponentProps {
-    marketPlanets: Array<PlanetType> | undefined;
+    listPlanets: Array<PlanetType> | undefined;
     setCurrentPlanet: (planet: PlanetType) => void;
     setShowPlanet: (showPlanet: boolean) => void;
+    isMarket: boolean;
 }
 
-const ListMarketPlanetsComponent: React.FC<ListNftComponentProps> = React.memo(({ marketPlanets, setCurrentPlanet, setShowPlanet }) => {
+const ListPlanetsComponent: React.FC<ListNftComponentProps> = React.memo(({ listPlanets, setCurrentPlanet, setShowPlanet, isMarket }) => {
     return (
         <div className={styles.ListNftContainer}>
-            {marketPlanets && marketPlanets.length > 0 ? (
-                marketPlanets.map((planet) => (
+            {listPlanets && listPlanets.length > 0 ? (
+                listPlanets.map((planet) => (
                     <div key={planet.NFTokenID} onClick={() => { (setTimeout(() => { setCurrentPlanet(planet) }, 500)), setShowPlanet(true) }}>
                         <p>Token ID: {planet.NFTokenID}</p>
                         <p>URI: {planet.URI}</p>
@@ -24,7 +25,7 @@ const ListMarketPlanetsComponent: React.FC<ListNftComponentProps> = React.memo((
                             <p>Location:<br/>Right ascension: {planet.right_ascension}</p>
                             <p>Declination: {planet.declination}</p>
                         </div>
-                        <p>price: {planet.price}</p>
+                        {isMarket && <p>price: {planet.price}</p>}
                     </div>
                 ))
             ) : <LoadingPlanet />}
@@ -32,4 +33,4 @@ const ListMarketPlanetsComponent: React.FC<ListNftComponentProps> = React.memo((
     );
 });
 
-export default ListMarketPlanetsComponent;
+export default ListPlanetsComponent;

@@ -4,7 +4,7 @@ import Head from "next/head";
 import NavigationBar from "@/components/NavigationBar";
 import PlanetComponent from "@/components/Planet/planetComponent";
 import { PlanetType } from "@/components/Planet/planetComponent";
-import ListMarketPlanetsComponent from "@/components/listMarketPlanets/listMarketPlanets";
+import ListPlanetsComponent from "@/components/listPlanets/listPlanets";
 
 export default function Marketplace() {
   const [marketPlanets, setMarketPlanets] = useState<PlanetType[] | undefined>(undefined);
@@ -35,7 +35,7 @@ export default function Marketplace() {
         <NavigationBar isMarketPlace />
         <p>Marketplace</p>
         {showPlanet && <PlanetComponent planet={currentPlanet} onClickEvent={() => { setShowPlanet(false), setCurrentPlanet(undefined) }} />}
-        <ListMarketPlanetsComponent marketPlanets={marketPlanets} setCurrentPlanet={setCurrentPlanet} setShowPlanet={setShowPlanet} />
+        <ListPlanetsComponent listPlanets={marketPlanets} setCurrentPlanet={setCurrentPlanet} setShowPlanet={setShowPlanet} isMarket={true} />
       </main>
     </>
   );

@@ -7,8 +7,15 @@ interface xrplContextType {
     generateNewWallet: () => Promise<Wallet | undefined>;
     getNFTFromWallet: (walletAddress: string) => Promise<any | undefined>;
     getBalanceFromWallet: (walletAddress: string) => Promise<Number | undefined>;
-    mintNFT: (userWallet: Wallet, URI: string) => Promise<boolean | undefined>;
+    mintNFT: (userWallet: Wallet, URI: nftUriType) => Promise<boolean | undefined>;
     burnNFT: (userWallet: Wallet, NFTokenID: string) => Promise<boolean | undefined>;
+}
+
+interface nftUriType {
+    name: string;
+    discovery_date: string;
+    right_ascension: string;
+    declination: string;
 }
 
 const XRPLContext = createContext<xrplContextType | undefined>(undefined);
@@ -44,11 +51,11 @@ export const XRPLProvider: ({ children }: any) => React.JSX.Element = ({ childre
         return (balance);
     }
 
-    const mintNFT = async (userWallet: Wallet, URI: string) => {
+    const mintNFT = async (userWallet: Wallet, URI: nftUriType) => {
         const transaction: SubmittableTransaction = {
             "TransactionType": "NFTokenMint",
             "Account": userWallet?.classicAddress,
-            "URI": convertStringToHex(URI),
+            "URI": convertStringToHex(JSON.stringify(URI)),
             "Flags": 8,
             "TransferFee": 10000,
             "NFTokenTaxon": 0
@@ -116,3 +123,5 @@ export const XRPLProvider: ({ children }: any) => React.JSX.Element = ({ childre
         </XRPLContext.Provider>
     );
 };
+
+export type { nftUriType };

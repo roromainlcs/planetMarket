@@ -8,6 +8,9 @@ import NavigationBar from '@/components/NavigationBar';
 import CreationForm from '@/components/CreationForm';
 import Image from "next/image";
 import { convertHexToString } from 'xrpl';
+import ListPlanetsComponent from "@/components/listPlanets/listPlanets";
+import { PlanetType } from '@/components/Planet/planetComponent';
+import PlanetComponent from "@/components/Planet/planetComponent";
 
 export default function Dashboard() {
     const [showCreationForm, setShowCreationForm] = useState(false);
@@ -15,6 +18,9 @@ export default function Dashboard() {
     const router = useRouter();
     const { userWallet } = useUser();
     const { getNFTFromWallet, burnNFT } = useXRPL();
+    const [currentPlanet, setCurrentPlanet] = useState<PlanetType | undefined>(undefined);
+    const [showPlanet, setShowPlanet] = useState<boolean>(false);
+    const [userPlanets, setUserPlanets] = useState<PlanetType[] | undefined>(undefined);
 
     const BurnOwnedNFT = async (NFTokenID: string) => {
         if (userWallet && userWallet !== undefined) {
@@ -76,10 +82,33 @@ export default function Dashboard() {
     }, [userWallet, router]);
 
     useEffect(() => {
-        userOwnedNFTs && userOwnedNFTs !== undefined && userOwnedNFTs.map((nft:any, index: number) => {
-            console.log("nft numero", index, "equal to:", nft);
-            console.log("converted uri", convertHexToString(nft?.URI));
-        })
+        // userOwnedNFTs && userOwnedNFTs !== undefined && userOwnedNFTs.map((nft:any, index: number) => {
+        //     console.log("nft numero", index, "equal to:", nft);
+        //     console.log("converted uri", convertHexToString(nft?.URI));
+        // })
+        if (userOwnedNFTs && userOwnedNFTs !== undefined) {
+            try {
+                const listPlanets: PlanetType[] = userOwnedNFTs.map((nft) => {
+                    console.log("nft:", nft);
+                    var planet = JSON.parse(convertHexToString(nft.URI));
+                    return ({
+                        NFTokenID: nft.NFTokenID,
+                        URI: nft.URI,
+                        Owner: nft.Issuer,
+                        Name: planet.name,
+                        discovery_date: planet.discovery_date,
+                        createdAt: '',
+                        updatedAt: '',
+                        right_ascension: planet.right_ascension,
+                        declination: planet.declination,
+                        price: 0
+                    });
+                });
+                setUserPlanets(listPlanets);
+            } catch (error) {
+                console.log("error:", error);
+            }
+        }
     }, [userOwnedNFTs]);
 
     return (
@@ -93,13 +122,8 @@ export default function Dashboard() {
                 <p>Dashboard</p>
                 <button onClick={() => setShowCreationForm(true)}>Create Planet</button>
                 {showCreationForm && <CreationForm onClose={() => setShowCreationForm(false)} />}
-                {
-                    userOwnedNFTs && userOwnedNFTs !== null && userOwnedNFTs !== undefined && userOwnedNFTs?.map((nft: any, index: number) =>
-                        <div key={index}>
-                            <p>This is a founded NFTs {nft?.NFTokenID}</p>
-                            <button onClick={async () => BurnOwnedNFT(nft?.NFTokenID)}>Burn the NFT</button>
-                        </div>)
-                }
+                {showPlanet && <PlanetComponent planet={currentPlanet} onClickEvent={() => { setShowPlanet(false), setCurrentPlanet(undefined) }} />}
+                <ListPlanetsComponent listPlanets={userPlanets} setCurrentPlanet={setCurrentPlanet} setShowPlanet={setShowPlanet} isMarket={false}/>
             </main >
         </>
     );
