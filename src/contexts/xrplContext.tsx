@@ -1,5 +1,6 @@
 import React, { createContext, useContext, useState, useEffect } from 'react';
-import { Client, Wallet, convertStringToHex, SubmittableTransaction } from 'xrpl';
+import { Client, Wallet, convertStringToHex, SubmittableTransaction, TxResponse } from 'xrpl';
+import { NFTokenCreateOffer, NFTokenCreateOfferMetadata } from 'xrpl/dist/npm/models/transactions/NFTokenCreateOffer';
 
 interface xrplContextType {
     xrplClient: Client | undefined;
@@ -9,6 +10,8 @@ interface xrplContextType {
     getBalanceFromWallet: (walletAddress: string) => Promise<Number | undefined>;
     mintNFT: (userWallet: Wallet, URI: nftUriType) => Promise<boolean | undefined>;
     burnNFT: (userWallet: Wallet, NFTokenID: string) => Promise<boolean | undefined>;
+    createOffer: (userWallet: Wallet, NFTokenID: string, price: number) => Promise<string>;
+    acceptOffer: (userWallet: Wallet, offerNFTokenID: string) => Promise<boolean>;
 }
 
 interface nftUriType {
@@ -58,7 +61,7 @@ export const XRPLProvider: ({ children }: any) => React.JSX.Element = ({ childre
             "URI": convertStringToHex(JSON.stringify(URI)),
             "Flags": 8,
             "TransferFee": 10000,
-            "NFTokenTaxon": 0
+            "NFTokenTaxon": 0,
         };
         const tsx = await xrplClient?.submitAndWait(transaction, { wallet: userWallet });
         console.log("result from nft transaction mint:", tsx);
@@ -91,6 +94,29 @@ export const XRPLProvider: ({ children }: any) => React.JSX.Element = ({ childre
         return (tsx && tsx !== null ? true : false);
     };
 
+    const createOffer = async (userWallet: Wallet, NFTokenID: string, price: number) => {
+        const transactionBlob: SubmittableTransaction = {
+            "TransactionType": "NFTokenCreateOffer",
+            "Account": userWallet?.classicAddress,
+            "NFTokenID": NFTokenID,
+            "Amount": price.toString() + '00000',
+            "Flags": 1
+        };
+        const tsx: any = await xrplClient?.submitAndWait(transactionBlob, { wallet: userWallet });
+        return (tsx?.result?.meta && tsx?.result?.meta?.offer_id ? tsx?.result?.meta?.offer_id : undefined);
+    };
+
+    const acceptOffer = async (userWallet: Wallet, offerNFTokenID: string) => {
+        const transactionBlob: SubmittableTransaction = {
+            "TransactionType": "NFTokenAcceptOffer",
+            "Account": userWallet?.classicAddress,
+            "NFTokenSellOffer": offerNFTokenID,
+        };
+        const tsx = await xrplClient?.submitAndWait(transactionBlob, { wallet: userWallet });
+        console.log("result from accept offer transaction:", tsx);
+        return (tsx && tsx !== null ? true : false);
+    };
+
     useEffect(() => {
         if (xrplClient && !xrplClient.isConnected()) {
             xrplClient.connect();
@@ -118,7 +144,7 @@ export const XRPLProvider: ({ children }: any) => React.JSX.Element = ({ childre
     }, []);
 
     return (
-        <XRPLContext.Provider value={{ xrplClient, getWalletFromSeed, generateNewWallet, getNFTFromWallet, getBalanceFromWallet, mintNFT, burnNFT }}>
+        <XRPLContext.Provider value={{ xrplClient, getWalletFromSeed, generateNewWallet, getNFTFromWallet, getBalanceFromWallet, mintNFT, burnNFT, createOffer, acceptOffer }}>
             {children}
         </XRPLContext.Provider>
     );

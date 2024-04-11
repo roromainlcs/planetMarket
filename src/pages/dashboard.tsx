@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react';
 import { useUser } from '@/contexts/userContext';
 import { useXRPL } from '@/contexts/xrplContext';
-import styles from '@/styles/dashboard.module.css';
+import styles from '@/styles/Dashboard.module.css';
 import { useRouter } from 'next/router';
 import Head from 'next/head';
 import NavigationBar from '@/components/NavigationBar';
