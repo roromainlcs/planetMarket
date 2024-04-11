@@ -122,7 +122,7 @@ export default function Dashboard() {
                 <p>Dashboard</p>
                 <button onClick={() => setShowCreationForm(true)}>Create Planet</button>
                 {showCreationForm && <CreationForm onClose={() => setShowCreationForm(false)} />}
-                {showPlanet && <PlanetComponent planet={currentPlanet} onClickEvent={() => { setShowPlanet(false), setCurrentPlanet(undefined) }} />}
+                {showPlanet && <PlanetComponent isMarket={false} planet={currentPlanet} onClickEvent={() => { setShowPlanet(false), setCurrentPlanet(undefined) }} />}
                 <ListPlanetsComponent listPlanets={userPlanets} setCurrentPlanet={setCurrentPlanet} setShowPlanet={setShowPlanet} isMarket={false}/>
             </main >
         </>

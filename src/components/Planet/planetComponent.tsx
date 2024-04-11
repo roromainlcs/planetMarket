@@ -17,9 +17,19 @@ interface PlanetType {
 interface PlanetComponentProps {
     planet: PlanetType | undefined,
     onClickEvent: () => void;
+    isMarket: boolean;
 }
 
-const PlanetComponent: React.FC<PlanetComponentProps> = ({ planet, onClickEvent }) => {
+function sellNft() {
+  console.log("NFT sold, put logic here");
+}
+
+function buyNft() {
+  console.log("NFT sold, put logic here");
+
+}
+
+const PlanetComponent: React.FC<PlanetComponentProps> = ({ planet, onClickEvent, isMarket }) => {
     return(
       <div className={styles.planetBg} onClick={onClickEvent}>
         <div className={styles.planetContainer} onClick={(event) => {event.stopPropagation();}}>
@@ -34,6 +44,8 @@ const PlanetComponent: React.FC<PlanetComponentProps> = ({ planet, onClickEvent 
               <p>Location:<br/>Right ascension: {planet.right_ascension}</p>
               <p>Declination: {planet.declination}</p>
             </div>
+            {(isMarket && <button onClick={buyNft}>Buy Nft</button>) ||
+            (!isMarket && <button onClick={sellNft}>sell Nft</button>)}
           </>
         ) || <LoadingPlanet/>}
         </div>
