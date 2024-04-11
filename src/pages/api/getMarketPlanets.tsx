@@ -27,7 +27,7 @@ export default async function getMarketPlanets(
         price: planet.price
     });
     });
-    console.log(marketPlanets);
+    //console.log(marketPlanets);
     res.status(200).json({ message: "success", marketPlanets: marketPlanets });
   } catch (error) {
     console.log("error:", error);
