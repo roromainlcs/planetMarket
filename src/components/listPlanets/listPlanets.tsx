@@ -1,5 +1,5 @@
 import React from 'react';
-import styles from "@/styles/Marketplace.module.css";
+import styles from "./listPlanets.module.css";
 import LoadingPlanet from "@/components/LoadingPlanet/loadingPlanet";
 import { PlanetType } from '../Planet/planetComponent';
 
@@ -12,7 +12,7 @@ interface ListNftComponentProps {
 
 const ListPlanetsComponent: React.FC<ListNftComponentProps> = React.memo(({ listPlanets, setCurrentPlanet, setShowPlanet, isMarket }) => {
     return (
-        <div className={styles.ListNftContainer}>
+        <div className={styles.listNftContainer}>
             {listPlanets && listPlanets.length > 0 ? (
                 listPlanets.map((planet) => (
                     <div key={planet.NFTokenID} onClick={() => { (setTimeout(() => { setCurrentPlanet(planet) }, 500)), setShowPlanet(true) }}>
