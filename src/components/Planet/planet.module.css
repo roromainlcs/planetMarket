@@ -37,4 +37,20 @@
 
 .planetContainer {
   border: solid 2px #007bff;
+  background-color: #131313;
+}
+
+.textName {
+  font-size: large;
+  font-weight: bold;
+}
+
+.text {
+  font-size: medium;
+  font-weight: bold;
+}
+
+.subtext {
+  font-size: medium;
+  font-weight: normal;
 }
