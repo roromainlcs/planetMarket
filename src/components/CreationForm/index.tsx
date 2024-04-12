@@ -5,60 +5,42 @@ import { useUser } from '@/contexts/userContext';
 import { useXRPL } from '@/contexts/xrplContext';
 import { set } from 'local-storage';
 import TimePicker from 'react-time-picker';
+import { nftUriType } from '@/contexts/xrplContext';
 
-interface FormFieldData {
-    name: string;
-    images?: File[];
-    discovery_date: string;
-    price?: number;
-    location: {
-        right_ascension: string;
-        declination: string;
-    }
+interface CreationFormProps {
+    onClose: () => void;
+    setIsCreatingNft: (isCreatingNft: boolean) => void;
 }
-
-export default function CreationForm({ onClose }: any) {
+const CreationForm: React.FC<CreationFormProps> = ({ onClose, setIsCreatingNft }) => {
     const [error, setError] = useState("");
     const { userWallet } = useUser();
     const { mintNFT } = useXRPL();
-    const [isCreatingNft, setIsCreatingNft] = useState(false);
-    const { uploadFileOnIPFS, pinFileOnIFPS } = useIPFS();
     const [declinationFormatError, setDeclinationFormatError] = useState("");
-    const [formData, setFormData] = useState<FormFieldData>({
+    const [formData, setFormData] = useState<nftUriType>({
         name: '',
         discovery_date: '',
-        price: 0,
-        location: {
-            right_ascension: '',
-            declination: '',
-        }
+        right_ascension: '',
+        declination: '',
     });
 
-    const handleImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-        const files = e.target.files;
-        if (files) {
-            const selectedImages = Array.from(files);
-            setFormData({ ...formData, images: selectedImages });
-        }
-    };
-
     const handleSubmit = async () => {
+        if (formData.name === "" || formData.discovery_date === "" || formData.right_ascension === "" || formData.declination === "") {
+            setError("Please fill all the fields");
+            return;
+        } else if (formData.name.length > 50) {
+            setError("Name is too long");
+            return;
+        } else if (declinationFormatError !== "")
+            return;
         try {
+            setIsCreatingNft(true);
             console.log("handlesubmit:", formData);
-            const test = { test: "1", history: "4701374014210", value: 'banana' };
-            console.log("test:", test);
-            const jsonFile = new File([JSON.stringify(test)], "announcement.json", { type: 'application/json' });
-            console.log("jsonFile:", jsonFile);
-
-            const jsonFileCID = await uploadFileOnIPFS(jsonFile);
-            console.log("jsonFileCID:", jsonFileCID);
-
-            const isPinned = await pinFileOnIFPS(jsonFileCID);
-            console.log("is json file pinned:", isPinned);
-
-            if (isPinned !== undefined && isPinned?.length > 0 && userWallet !== undefined) {
-                const newNFToken = await mintNFT(userWallet, jsonFileCID);
-                console.log("is nft created ?:", newNFToken);
+            if (userWallet !== undefined) {
+                mintNFT(userWallet, formData).then((res) => {
+                console.log("is nft created ?:", res);
+                setIsCreatingNft(false);
+                onClose();
+                });
             }
         } catch (error) {
             console.log('error handle submit:', error);
@@ -67,7 +49,7 @@ export default function CreationForm({ onClose }: any) {
 
     function isValidDeclination (declination: string) {
         const raRegex = /^[+-]?(90(?!.*[1-9])|[0-8]?[0-9]?)(?:°|:|\s)\s*(60(?!.*[1-9])|[0-5]?[0-9])(?:\'|:|\s)\s*([0-5]?[0-9]\.\d+)(?:\")?/;
-        console.log(raRegex.test(declination));
+        //console.log(raRegex.test(declination));
         if (declination === "" || declination === undefined || raRegex.test(declination))
             setDeclinationFormatError("");
         else if (!raRegex.test(declination))
@@ -79,7 +61,7 @@ export default function CreationForm({ onClose }: any) {
         <div className={styles.overlay}>
             <div className={styles.formContainer}>
                 <h2>Create Announcement</h2>
-                    <div className={styles.formGroup}>
+                    {/* <div className={styles.formGroup}>
                         <label className={styles.dateLabel} htmlFor="images">Images</label>
                         <input
                             type="file"
@@ -87,8 +69,9 @@ export default function CreationForm({ onClose }: any) {
                             accept=".png, .jpg"
                             onChange={handleImageChange}
                         />
-                    </div>
+                    </div> */}
                     <div className={styles.formGroup}>
+                        {error !== "" && <p className={styles.errorMessage}>{error}</p>}
                         <label htmlFor="name">Name</label>
                         <input
                             type="text"
@@ -102,28 +85,21 @@ export default function CreationForm({ onClose }: any) {
                             value={formData.discovery_date}
                             onChange={(e) => setFormData({ ...formData, discovery_date: e.target.value })}
                         />
-                        <label htmlFor="price">Price</label>
-                        <input
-                            type="number"
-                            step="0.01"
-                            value={formData.price}
-                            onChange={(e) => setFormData({ ...formData, price: parseFloat(e.target.value) })}
-                        />
                     </div>
                     <div className={styles.formGroup}>
                         <label htmlFor="right_ascension">Right ascension</label>
                         <TimePicker className={styles.timePicker} 
                         disableClock={true}
                         maxDetail='second'
-                        value={formData.location.right_ascension}
+                        value={formData.right_ascension}
                         clearIcon={null}
-                        onChange={(time) => setFormData({ ...formData, location: { ...formData.location, right_ascension: (time !== null && time) || "00:00:00" } })}/>
+                        onChange={(time) => setFormData({ ...formData, right_ascension: (time !== null && time) || "00:00:00" })}/>
                         <label htmlFor="declination">declination</label>
                         <input
                             placeholder={"-62° 40\" 46.0'"}
                             type="text"
-                            value={formData.location.declination}
-                            onChange={(e) => isValidDeclination(e.target.value) && setFormData({ ...formData, location: { ...formData.location, declination: e.target.value } })}
+                            value={formData.declination}
+                            onChange={(e) => isValidDeclination(e.target.value) && setFormData({ ...formData, declination: e.target.value })}
                         />
                         {declinationFormatError !== "" && <p className={styles.errorMessage}>{declinationFormatError}</p>}
 
@@ -136,3 +112,5 @@ export default function CreationForm({ onClose }: any) {
         </div>
     );
 }
+
+export default CreationForm;

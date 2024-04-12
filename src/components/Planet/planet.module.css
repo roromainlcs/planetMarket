@@ -26,14 +26,31 @@
   border: solid 2px #007bff;
 }
 
-.planetContainer>div {
-  cursor: pointer;
-}
-
 .planetContainer * {
   margin: 1rem;
 }
 
+.planetContainer p {
+  word-wrap: break-word;
+  white-space: normal;
+}
+
 .planetContainer {
   border: solid 2px #007bff;
+  background-color: #131313;
+}
+
+.textName {
+  font-size: large;
+  font-weight: bold;
+}
+
+.text {
+  font-size: medium;
+  font-weight: bold;
+}
+
+.subtext {
+  font-size: medium;
+  font-weight: normal;
 }

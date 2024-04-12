@@ -23,7 +23,7 @@ const NavigationBar = ({ isMarketPlace }: any) => {
     return (
         <nav className={styles.navbar}>
             <div className={styles.left}>
-                <h1>CoinMarket</h1>
+                <h1>PlanetMarket</h1>
                 {userWallet && <p>{userBalance !== undefined ? userBalance.toString() : "0"} XRPs</p>}
             </div>
             <div className={styles.right}>

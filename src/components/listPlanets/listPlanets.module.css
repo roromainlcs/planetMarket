@@ -1,0 +1,60 @@
+.listNftContainer {
+  display: flex;
+  flex-wrap: wrap;
+  flex-direction: row;
+  justify-content: center;
+  align-items: center;
+  width: 98%;
+  height: 100%;
+  overflow-y: auto;
+  border: solid 2px grey;
+  border-radius: 4px;
+  margin-top: 2rem;
+  flex-grow: 1;
+}
+
+.listNftContainer div {
+  border-radius: 4px;
+  border: solid 2px #007bff;
+  background-color: #252525;
+}
+
+.textName {
+  font-size: large;
+  font-weight: bold;
+}
+
+.text {
+  font-size: medium;
+  font-weight: bold;
+}
+
+.subtext {
+  font-size: medium;
+  font-weight: normal;
+}
+
+.listNftContainer > div {
+  cursor: pointer;
+  width: 45%;
+}
+
+.listNftContainer * {
+  margin: 1rem;
+}
+
+.listNftContainer p {
+  word-wrap: break-word;
+  white-space: normal;
+}
+
+.planetLocation {
+  border: solid 2px #007bff;
+}
+
+
+@media (max-width: 1024px) {
+  .listNftContainer > div {
+    width: 90%;
+  }
+}
