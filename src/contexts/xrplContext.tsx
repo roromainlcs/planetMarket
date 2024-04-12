@@ -43,8 +43,12 @@ export const XRPLProvider: ({ children }: any) => React.JSX.Element = ({ childre
 
     const generateNewWallet = async () => {
         if (xrplClient && xrplClient !== null && xrplClient !== undefined) {
-            const wallet = (await xrplClient?.fundWallet(null, { faucetHost: undefined }))?.wallet
-            return (wallet ? wallet : undefined);
+            try {
+                const wallet = (await xrplClient.fundWallet(null, { faucetHost: undefined })).wallet;
+                return (wallet ? wallet : undefined);
+            } catch (error) {
+                console.log("error from generate wallet:", error);
+            }
         }
     };
 
