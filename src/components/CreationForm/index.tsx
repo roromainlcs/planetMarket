@@ -24,6 +24,14 @@ const CreationForm: React.FC<CreationFormProps> = ({ onClose, setIsCreatingNft }
     });
 
     const handleSubmit = async () => {
+        if (formData.name === "" || formData.discovery_date === "" || formData.right_ascension === "" || formData.declination === "") {
+            setError("Please fill all the fields");
+            return;
+        } else if (formData.name.length > 50) {
+            setError("Name is too long");
+            return;
+        } else if (declinationFormatError !== "")
+            return;
         try {
             setIsCreatingNft(true);
             console.log("handlesubmit:", formData);
@@ -63,6 +71,7 @@ const CreationForm: React.FC<CreationFormProps> = ({ onClose, setIsCreatingNft }
                         />
                     </div> */}
                     <div className={styles.formGroup}>
+                        {error !== "" && <p className={styles.errorMessage}>{error}</p>}
                         <label htmlFor="name">Name</label>
                         <input
                             type="text"

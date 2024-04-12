@@ -7,3 +7,34 @@
   height: 99vh;
 }
 
+
+.planetGifContainer {
+  background-color: black;
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: 101%;
+  height: 100%;
+  transform: translate(-50%, -50%);
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  opacity: 0.9;
+  overflow: hidden;
+  user-select: none; /* Prevent text selection */
+}
+
+.planetGifContainer h1 {
+  margin-bottom: -2rem;
+  z-index: 0;
+  text-align: center;
+}
+
+.planetGif {
+  width: 600px;
+  height: auto;
+  object-fit:contain;
+  user-select: none;
+  pointer-events: none; /* Prevents the image from being draggable */
+}

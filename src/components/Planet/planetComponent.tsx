@@ -24,19 +24,23 @@ interface PlanetComponentProps {
     onClickEvent: () => void;
     isMarket: boolean;
     setBurnedNft: ((setBurnedNft: string) => void) | undefined;
+    setTradedNft: ((setTradedNft: string) => void);
 }
 
 
 
-const PlanetComponent: React.FC<PlanetComponentProps> = ({ planet, onClickEvent, isMarket, setBurnedNft }) => {
+const PlanetComponent: React.FC<PlanetComponentProps> = ({ planet, onClickEvent, isMarket, setBurnedNft, setTradedNft }) => {
   const [price, setPrice] = useState<number>(0);
   const { createOffer, acceptOffer} = useXRPL();
   const { userWallet } = useUser();
 
   const sellNft = async () => {
     console.log(JSON.stringify({...planet, price: price}));
-    if (!userWallet || planet === undefined || price === 0)
+    if (!userWallet || planet === undefined || price === 0 || price === undefined) {
+      console.log("something went wrong, userWallet:", userWallet, "planet:", planet, "price:", price);
       return;
+    }
+    setTradedNft(planet.NFTokenID);
     const offerTsxId = await createOffer(userWallet, planet.NFTokenID, price);
     // mettre le offerTsxId dans l'object nft stocker sur le back pour pouvoir le recup quand on veut le buy
     const response = await fetch('/api/sellPlanet', {
@@ -47,11 +51,13 @@ const PlanetComponent: React.FC<PlanetComponentProps> = ({ planet, onClickEvent,
       body: JSON.stringify({...planet, price: price, offerID: offerTsxId}),// rajouter le offertsxId dans l'object pour pouvoir le recup et le mettre dans l'acceptation de l'offre par l'autre wallet
     });
     console.log(response, offerTsxId);
+    setTradedNft('');
   }
 
   const buyNft = async () => {
     if (!userWallet || planet === undefined || planet.offerID === undefined)
       return;
+    setTradedNft(planet.NFTokenID);
     const accepted = await acceptOffer(userWallet, planet.offerID);
     console.log("is transaction accepted: ", accepted);
     if (accepted) {
@@ -63,6 +69,8 @@ const PlanetComponent: React.FC<PlanetComponentProps> = ({ planet, onClickEvent,
         body: JSON.stringify({NFTokenID: planet.NFTokenID}),
       });
     }
+    setTradedNft('');
+    onClickEvent();
   }
 
   return(

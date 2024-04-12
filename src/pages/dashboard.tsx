@@ -1,7 +1,7 @@
-import { use, useEffect, useState } from 'react';
+import { useEffect, useState } from 'react';
 import { useUser } from '@/contexts/userContext';
 import { useXRPL } from '@/contexts/xrplContext';
-import styles from '@/styles/Dashboard.module.css';
+import styles from '@/styles/dashboard.module.css';
 import { useRouter } from 'next/router';
 import Head from 'next/head';
 import NavigationBar from '@/components/NavigationBar';
@@ -23,6 +23,7 @@ export default function Dashboard() {
     const [userPlanets, setUserPlanets] = useState<PlanetType[] | undefined>(undefined);
     const [isCreatingNft, setIsCreatingNft] = useState<boolean>(false);
     const [burnedNft, setBurnedNft] = useState<string>('');
+    const [soldNft, setSoldNft] = useState<string>('');
 
 
     const BurnOwnedNFT = async (NFTokenID: string) => {
@@ -48,7 +49,7 @@ export default function Dashboard() {
         }
     }
 
-    const CreatingNft = () => { //load page creating nft component
+    const CreatingNft = () => {
         return (
             <div className={styles.planetGifContainer}>
                 <h1>Creating new planet</h1>
@@ -80,8 +81,26 @@ export default function Dashboard() {
         );
     }
 
+    const SellingNft = () => { //load page burning nft component
+        return (
+            <div className={styles.planetGifContainer}>
+                <h1>pushing planet to the marketplace: <br/>{soldNft}</h1>
+                <Image
+                src='/static/images/planet_gif1.gif'
+                width={900}
+                height={600}
+                alt='burning next planet gif'
+                className={styles.planetGif}
+                unoptimized={true}
+                />
+            </div>
+        );
+    }
+
+
     useEffect(() => {
-        burnedNft !== '' && BurnOwnedNFT(burnedNft);
+        if (burnedNft !== '')
+            BurnOwnedNFT(burnedNft);
     }, [burnedNft]);
 
     useEffect(() => {
@@ -94,15 +113,9 @@ export default function Dashboard() {
                 setUserOwnedNFTs(NFTs);
             }
         }
-
         if (userWallet && userWallet !== undefined) {
             console.log("user wallet into dashboard page:", userWallet);
             getNFTOwned();
-        } else {
-            // setTimeout(() => {
-            //     console.log("user wallet is not defined")
-            //     router.push('/login');
-            // }, 2000);
         }
     }, [userWallet, router, burnedNft, isCreatingNft]);
 
@@ -110,7 +123,7 @@ export default function Dashboard() {
         if (userOwnedNFTs && userOwnedNFTs !== undefined) {
             try {
                 const listPlanets: PlanetType[] = userOwnedNFTs.map((nft) => {
-                    console.log("nft:", nft);
+                    //console.log("nft:", nft);
                     var planet = JSON.parse(convertHexToString(nft.URI));
                     return ({
                         NFTokenID: nft.NFTokenID,
@@ -144,10 +157,11 @@ export default function Dashboard() {
                 <p>Dashboard</p>
                 <button onClick={() => setShowCreationForm(true)}>Create Planet</button>
                 {showCreationForm && <CreationForm onClose={() => setShowCreationForm(false)} setIsCreatingNft={setIsCreatingNft} />}
-                {showPlanet && <PlanetComponent setBurnedNft={setBurnedNft} isMarket={false} planet={currentPlanet} onClickEvent={() => { setShowPlanet(false), setCurrentPlanet(undefined) }} />}
+                {showPlanet && <PlanetComponent setTradedNft={setSoldNft} setBurnedNft={setBurnedNft} isMarket={false} planet={currentPlanet} onClickEvent={() => { setShowPlanet(false), setCurrentPlanet(undefined) }} />}
                 <ListPlanetsComponent listPlanets={userPlanets} setCurrentPlanet={setCurrentPlanet} setShowPlanet={setShowPlanet} isMarket={false}/>
                 {isCreatingNft && <CreatingNft/>}
                 {burnedNft !== '' && <BurningNft/>}
+                {soldNft !== '' && <SellingNft/>}
             </main >
         </>
     );
