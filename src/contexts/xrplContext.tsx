@@ -99,7 +99,7 @@ export const XRPLProvider: ({ children }: any) => React.JSX.Element = ({ childre
             "TransactionType": "NFTokenCreateOffer",
             "Account": userWallet?.classicAddress,
             "NFTokenID": NFTokenID,
-            "Amount": price.toString() + '00000',
+            "Amount": (price * 100000).toString(),
             "Flags": 1
         };
         const tsx: any = await xrplClient?.submitAndWait(transactionBlob, { wallet: userWallet });
@@ -107,6 +107,7 @@ export const XRPLProvider: ({ children }: any) => React.JSX.Element = ({ childre
     };
 
     const acceptOffer = async (userWallet: Wallet, offerNFTokenID: string) => {
+        console.log("offerNFTokenID:", offerNFTokenID, "userWallet:", userWallet?.classicAddress);
         const transactionBlob: SubmittableTransaction = {
             "TransactionType": "NFTokenAcceptOffer",
             "Account": userWallet?.classicAddress,

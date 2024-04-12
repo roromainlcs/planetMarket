@@ -12,6 +12,7 @@ datasource db {
 
 model nft {
   NFTokenID         String      @id
+  offerID           String      @unique
   URI               String      @unique
   Owner             String
   Name              String

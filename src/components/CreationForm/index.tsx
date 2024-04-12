@@ -7,11 +7,14 @@ import { set } from 'local-storage';
 import TimePicker from 'react-time-picker';
 import { nftUriType } from '@/contexts/xrplContext';
 
-export default function CreationForm({ onClose }: any) {
+interface CreationFormProps {
+    onClose: () => void;
+    setIsCreatingNft: (isCreatingNft: boolean) => void;
+}
+const CreationForm: React.FC<CreationFormProps> = ({ onClose, setIsCreatingNft }) => {
     const [error, setError] = useState("");
     const { userWallet } = useUser();
     const { mintNFT } = useXRPL();
-    const [isCreatingNft, setIsCreatingNft] = useState(false);
     const [declinationFormatError, setDeclinationFormatError] = useState("");
     const [formData, setFormData] = useState<nftUriType>({
         name: '',
@@ -19,14 +22,6 @@ export default function CreationForm({ onClose }: any) {
         right_ascension: '',
         declination: '',
     });
-
-    // const handleImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    //     const files = e.target.files;
-    //     if (files) {
-    //         const selectedImages = Array.from(files);
-    //         setFormData({ ...formData, images: selectedImages });
-    //     }
-    // };
 
     const handleSubmit = async () => {
         try {
@@ -36,6 +31,7 @@ export default function CreationForm({ onClose }: any) {
                 mintNFT(userWallet, formData).then((res) => {
                 console.log("is nft created ?:", res);
                 setIsCreatingNft(false);
+                onClose();
                 });
             }
         } catch (error) {
@@ -45,7 +41,7 @@ export default function CreationForm({ onClose }: any) {
 
     function isValidDeclination (declination: string) {
         const raRegex = /^[+-]?(90(?!.*[1-9])|[0-8]?[0-9]?)(?:°|:|\s)\s*(60(?!.*[1-9])|[0-5]?[0-9])(?:\'|:|\s)\s*([0-5]?[0-9]\.\d+)(?:\")?/;
-        console.log(raRegex.test(declination));
+        //console.log(raRegex.test(declination));
         if (declination === "" || declination === undefined || raRegex.test(declination))
             setDeclinationFormatError("");
         else if (!raRegex.test(declination))
@@ -80,13 +76,6 @@ export default function CreationForm({ onClose }: any) {
                             value={formData.discovery_date}
                             onChange={(e) => setFormData({ ...formData, discovery_date: e.target.value })}
                         />
-                        {/* <label htmlFor="price">Price</label>
-                        <input
-                            type="number"
-                            step="0.01"
-                            value={formData.price}
-                            onChange={(e) => setFormData({ ...formData, price: parseFloat(e.target.value) })}
-                        /> */}
                     </div>
                     <div className={styles.formGroup}>
                         <label htmlFor="right_ascension">Right ascension</label>
@@ -114,3 +103,5 @@ export default function CreationForm({ onClose }: any) {
         </div>
     );
 }
+
+export default CreationForm;

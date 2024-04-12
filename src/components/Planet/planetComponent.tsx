@@ -7,6 +7,7 @@ import { useUser } from '@/contexts/userContext';
 
 interface PlanetType {
   NFTokenID: string;
+  offerID: string;
   URI: string;
   Owner: string;
   Name: string;
@@ -22,38 +23,46 @@ interface PlanetComponentProps {
     planet: PlanetType | undefined,
     onClickEvent: () => void;
     isMarket: boolean;
+    setBurnedNft: ((setBurnedNft: string) => void) | undefined;
 }
 
 
 
-const PlanetComponent: React.FC<PlanetComponentProps> = ({ planet, onClickEvent, isMarket }) => {
+const PlanetComponent: React.FC<PlanetComponentProps> = ({ planet, onClickEvent, isMarket, setBurnedNft }) => {
   const [price, setPrice] = useState<number>(0);
   const { createOffer, acceptOffer} = useXRPL();
   const { userWallet } = useUser();
 
-  const sellNft = async (NFTokenID: string) => {
+  const sellNft = async () => {
     console.log(JSON.stringify({...planet, price: price}));
-    if (userWallet) {
-      const offerTsxId = await createOffer(userWallet, NFTokenID, price);
-      // mettre le offerTsxId dans l'object nft stocker sur le back pour pouvoir le recup quand on veut le buy
-      console.log("transaction to create offer", offerTsxId);
-    }
+    if (!userWallet || planet === undefined || price === 0)
+      return;
+    const offerTsxId = await createOffer(userWallet, planet.NFTokenID, price);
+    // mettre le offerTsxId dans l'object nft stocker sur le back pour pouvoir le recup quand on veut le buy
     const response = await fetch('/api/sellPlanet', {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
       },
-      body: JSON.stringify({...planet, price: price}),// rajouter le offertsxId dans l'object pour pouvoir le recup et le mettre dans l'acceptation de l'offre par l'autre wallet
+      body: JSON.stringify({...planet, price: price, offerID: offerTsxId}),// rajouter le offertsxId dans l'object pour pouvoir le recup et le mettre dans l'acceptation de l'offre par l'autre wallet
     });
-    console.log("response", response);
+    console.log(response, offerTsxId);
   }
 
-  const buyNft = async (offerId: string) => {
-    if (userWallet && offerId) {
-      const booleanTsx = await acceptOffer(userWallet, offerId);
-      console.log("transaction to acceot offer", booleanTsx);
+  const buyNft = async () => {
+    if (!userWallet || planet === undefined || planet.offerID === undefined)
+      return;
+    const accepted = await acceptOffer(userWallet, planet.offerID);
+    console.log("is transaction accepted: ", accepted);
+    if (accepted) {
+      const response = await fetch('/api/removePlanetFromSales', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({NFTokenID: planet.NFTokenID}),
+      });
     }
-    console.log("NFT sold, put logic here");
   }
 
   return(
@@ -73,13 +82,14 @@ const PlanetComponent: React.FC<PlanetComponentProps> = ({ planet, onClickEvent,
           {(isMarket &&
           <>
             <p>price: {planet.price}</p>
-            <button onClick={async () => {await buyNft(/*planet.offerID*/ 'offer id string')}}>Buy Nft</button>
+            <button onClick={buyNft}>Buy Nft</button>
           </>) ||
           (!isMarket && 
           <>
-            <button onClick={async () => {await sellNft(planet.NFTokenID)}}>sell Nft</button>
+            <button onClick={sellNft}>Sell Nft</button>
             <label>Price:</label>
             <input type="number" placeholder="price" step={0.01} onChange={(e) => {setPrice(parseFloat(e.target.value))}}></input>
+            <button onClick={() => {setBurnedNft !== undefined && setBurnedNft(planet.NFTokenID)}}>Burn Nft</button>
           </>)}
         </>
       ) || <LoadingPlanet/>}

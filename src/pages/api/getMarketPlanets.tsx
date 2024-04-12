@@ -16,6 +16,7 @@ export default async function getMarketPlanets(
     const marketPlanets: PlanetType[] = pulled.map((planet) => {
     return ({
         NFTokenID: planet.NFTokenID,
+        offerID: planet.offerID,
         URI: planet.URI,
         Owner: planet.Owner,
         Name: planet.Name,

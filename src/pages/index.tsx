@@ -34,7 +34,7 @@ export default function Marketplace() {
       <main className={styles.main}>
         <NavigationBar isMarketPlace />
         <p>Marketplace</p>
-        {showPlanet && <PlanetComponent isMarket={true} planet={currentPlanet} onClickEvent={() => { setShowPlanet(false), setCurrentPlanet(undefined) }} />}
+        {showPlanet && <PlanetComponent setBurnedNft={undefined} isMarket={true} planet={currentPlanet} onClickEvent={() => { setShowPlanet(false), setCurrentPlanet(undefined) }} />}
         <ListPlanetsComponent listPlanets={marketPlanets} setCurrentPlanet={setCurrentPlanet} setShowPlanet={setShowPlanet} isMarket={true} />
       </main>
     </>

@@ -6,29 +6,28 @@ type ResponseData = {
   message: string;
 };
 
-export default async function sellPlanet(
+export default async function removePlanetFromSales(
   req: NextApiRequest,
   res: NextApiResponse<ResponseData>
 ) {
+  //console.log(prisma.nft.findUnique({where:{NFTokenID: req.body.NFTokenID}}));
   if (req.method == "POST") {
-    console.log(req.body);
-    prisma.nft.create({
-      data: {
+    if (!req.body.NFTokenID) {
+      res.status(500).json({ message: "error, no nft token ID given" });
+      return;
+    } else if (await prisma.nft.findUnique({where:{NFTokenID: req.body.NFTokenID}}) === null) {
+      res.status(201).json({ message: `no such nft: ${req.body.NFTokenID}` });
+      return;
+    }
+    prisma.nft.delete({
+      where: {
         NFTokenID: req.body.NFTokenID,
-        offerID: req.body.offerID,
-        URI: req.body.URI,
-        Owner: req.body.Owner,
-        Name: req.body.Name,
-        discovery_date: req.body.discovery_date,
-        right_ascension: req.body.right_ascension,
-        declination: req.body.declination,
-        price: req.body.price,
       },
     }).then(() => {
       res.status(200).json({ message: "success" });
     }).catch((error) => {
       console.log("error:", error);
-      res.status(500).json({ message: "Internal server error" });
+      res.status(500).json({ message: "couldn't remove nft from market, it might just not exist on market" });
     });
   } else {
     //bloquer les autres méthodes

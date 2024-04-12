@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react';
+import { use, useEffect, useState } from 'react';
 import { useUser } from '@/contexts/userContext';
 import { useXRPL } from '@/contexts/xrplContext';
 import styles from '@/styles/Dashboard.module.css';
@@ -21,47 +21,72 @@ export default function Dashboard() {
     const [currentPlanet, setCurrentPlanet] = useState<PlanetType | undefined>(undefined);
     const [showPlanet, setShowPlanet] = useState<boolean>(false);
     const [userPlanets, setUserPlanets] = useState<PlanetType[] | undefined>(undefined);
+    const [isCreatingNft, setIsCreatingNft] = useState<boolean>(false);
+    const [burnedNft, setBurnedNft] = useState<string>('');
+
 
     const BurnOwnedNFT = async (NFTokenID: string) => {
         if (userWallet && userWallet !== undefined) {
-            const newNFToken = await burnNFT(userWallet, NFTokenID);
-            console.log("is nft burned ?:", newNFToken);
+            const isBurned = await burnNFT(userWallet, NFTokenID);
+            console.log("is nft burned ?:", isBurned);
+            if (isBurned) {
+                fetch('/api/removePlanetFromSales', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({ NFTokenID: NFTokenID }),
+                }).then((res) => {
+                    //console.log(res)
+                }).catch((error) => {
+                    console.log("error:", error);
+                });
+                setBurnedNft('');
+                setShowPlanet(false);
+                setCurrentPlanet(undefined);
+            }
         }
     }
 
-    // const CreatingNft = () => { //load page creating nft component
-    //     return (
-    //         <div className={styles.planetGifContainer}>
-    //             <h1>Creating new planet</h1>
-    //             <Image
-    //             src='/static/images/planet_gif1.gif'
-    //             width={900}
-    //             height={600}
-    //             alt='loading next planet gif'
-    //             className={styles.planetGif}
-    //             unoptimized={true}
-    //             />
-    //         </div>
-    //     );
-    // }
+    const CreatingNft = () => { //load page creating nft component
+        return (
+            <div className={styles.planetGifContainer}>
+                <h1>Creating new planet</h1>
+                <Image
+                src='/static/images/planet_gif1.gif'
+                width={900}
+                height={600}
+                alt='loading next planet gif'
+                className={styles.planetGif}
+                unoptimized={true}
+                />
+            </div>
+        );
+    }
 
-    // const BurningNft = () => { //load page burning nft component
-    //     return (
-    //         <div className={styles.planetGifContainer}>
-    //             <h1>Burning the planet: <br/>{burnedNft}</h1>
-    //             <Image
-    //             src='/static/images/planet_gif1.gif'
-    //             width={900}
-    //             height={600}
-    //             alt='burning next planet gif'
-    //             className={styles.planetGif}
-    //             unoptimized={true}
-    //             />
-    //         </div>
-    //     );
-    // }
+    const BurningNft = () => { //load page burning nft component
+        return (
+            <div className={styles.planetGifContainer}>
+                <h1>Burning the planet: <br/>{burnedNft}</h1>
+                <Image
+                src='/static/images/planet_gif1.gif'
+                width={900}
+                height={600}
+                alt='burning next planet gif'
+                className={styles.planetGif}
+                unoptimized={true}
+                />
+            </div>
+        );
+    }
 
     useEffect(() => {
+        burnedNft !== '' && BurnOwnedNFT(burnedNft);
+    }, [burnedNft]);
+
+    useEffect(() => {
+        if (burnedNft !== '' || isCreatingNft == true)
+            return;
         const getNFTOwned = async () => {
             if (userWallet !== undefined && userWallet?.classicAddress !== undefined) {
                 const NFTs: [] = await getNFTFromWallet(userWallet.classicAddress);
@@ -79,13 +104,9 @@ export default function Dashboard() {
             //     router.push('/login');
             // }, 2000);
         }
-    }, [userWallet, router]);
+    }, [userWallet, router, burnedNft, isCreatingNft]);
 
     useEffect(() => {
-        // userOwnedNFTs && userOwnedNFTs !== undefined && userOwnedNFTs.map((nft:any, index: number) => {
-        //     console.log("nft numero", index, "equal to:", nft);
-        //     console.log("converted uri", convertHexToString(nft?.URI));
-        // })
         if (userOwnedNFTs && userOwnedNFTs !== undefined) {
             try {
                 const listPlanets: PlanetType[] = userOwnedNFTs.map((nft) => {
@@ -94,6 +115,7 @@ export default function Dashboard() {
                     return ({
                         NFTokenID: nft.NFTokenID,
                         URI: nft.URI,
+                        offerID: nft.offerID,
                         Owner: nft.Issuer,
                         Name: planet.name,
                         discovery_date: planet.discovery_date,
@@ -121,9 +143,11 @@ export default function Dashboard() {
                 <NavigationBar />
                 <p>Dashboard</p>
                 <button onClick={() => setShowCreationForm(true)}>Create Planet</button>
-                {showCreationForm && <CreationForm onClose={() => setShowCreationForm(false)} />}
-                {showPlanet && <PlanetComponent isMarket={false} planet={currentPlanet} onClickEvent={() => { setShowPlanet(false), setCurrentPlanet(undefined) }} />}
+                {showCreationForm && <CreationForm onClose={() => setShowCreationForm(false)} setIsCreatingNft={setIsCreatingNft} />}
+                {showPlanet && <PlanetComponent setBurnedNft={setBurnedNft} isMarket={false} planet={currentPlanet} onClickEvent={() => { setShowPlanet(false), setCurrentPlanet(undefined) }} />}
                 <ListPlanetsComponent listPlanets={userPlanets} setCurrentPlanet={setCurrentPlanet} setShowPlanet={setShowPlanet} isMarket={false}/>
+                {isCreatingNft && <CreatingNft/>}
+                {burnedNft !== '' && <BurningNft/>}
             </main >
         </>
     );
