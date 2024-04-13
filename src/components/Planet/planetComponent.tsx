@@ -90,10 +90,10 @@ const PlanetComponent: React.FC<PlanetComponentProps> = ({ planet, onClickEvent,
               <p className={styles.text}>Declination: <span className={styles.subtext}>{planet.declination}</span></p>
           </div>
           {(isMarket &&
-          <>
+          <div className={styles.buyContainer}>
             <p>price: {planet.price}</p>
             <button onClick={buyNft}>Buy Nft</button>
-          </>) ||
+          </div>) ||
           (!isMarket && 
           <>
             <button onClick={sellNft}>Sell Nft</button>
