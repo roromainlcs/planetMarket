@@ -79,7 +79,7 @@ const PlanetComponent: React.FC<PlanetComponentProps> = ({ planet, onClickEvent,
       {(planet !== undefined && 
         <>
           <p className={styles.textName}>Planet: <span className={styles.subtext}>{planet.Name}</span></p>
-          <p className={styles.text}>Owner id: <span className={styles.subtext}>{planet.Owner}</span></p>
+          <p className={styles.text}>Owner ID: <span className={styles.subtext}>{planet.Owner}</span></p>
           <p className={styles.text}>Discovery date: <span className={styles.subtext}>{planet.discovery_date}</span></p>
           <p className={styles.text}>The planet Token ID:</p>
           <p className={styles.subtext}>{planet.NFTokenID}</p>

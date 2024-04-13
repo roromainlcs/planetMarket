@@ -116,6 +116,9 @@ export default function Dashboard() {
         if (userWallet && userWallet !== undefined) {
             console.log("user wallet into dashboard page:", userWallet);
             getNFTOwned();
+        } else {
+            //console.log("user wallet is not defined")
+            router.push('/login');
         }
     }, [userWallet, router, burnedNft, isCreatingNft]);
 

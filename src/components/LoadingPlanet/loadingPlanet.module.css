@@ -8,9 +8,12 @@
   cursor: default !important;
   justify-content: center;
   align-items: center;
+  background-color: black !important;
 }
 
 .planetGif {
   margin: 0 0 0 0 !important;
   cursor: default;
+  height: 100%;
+  width: auto;
 }
