@@ -1,0 +1,28 @@
+
+.navbar_button {
+  background-color: #007bff;
+  color: #fff;
+  border: none;
+  padding: 8px 16px;
+  margin-left: 10px;
+  cursor: pointer;
+}
+
+.left {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+}
+
+.left p {
+  margin-left: 10px;
+}
+
+.navbar-container {
+  display: flex;
+  background-color: transparent;
+  justify-content: center;
+  align-items: center;
+  text-align: center;
+  pointer-events: none;
+}
