@@ -4,9 +4,9 @@
     justify-content: space-between;
     align-items: center;
     width: 100%;
-    height: 99vh;
+    height: fit-content;
 }
-
+\\
 .planetGifContainer {
     background-color: black;
     position: absolute;

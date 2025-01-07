@@ -6,8 +6,10 @@ import "@/styles/navbar.css";
 import { useRouter } from "next/navigation";
 import { useXRPL } from "@/contexts/xrplContext";
 import { usePathname } from "next/navigation";
+import { FloatingNav } from "../ui/floating-navbar";
+import { SpeButton } from "../ui/shadcn/button";
 
-const NavigationBar = () => {
+function NavigationBar() {
   const router = useRouter();
   const { userWallet } = useUser();
   const { getBalanceFromWallet, xrplClient } = useXRPL();
@@ -27,37 +29,35 @@ const NavigationBar = () => {
   }, [userWallet, xrplClient]);
 
   return (
-    <div className='flex bg-transparent justify-center pointer-events-none mt-4'>
-      <nav id='nav' className='min-w-[850px] bg-navbar font-white flex justify-between items-center w-11/12 px-8 py-2 pointer-events-auto border rounded-full'>
-        <div className='left'>
-          <h1>PlanetMarket</h1>
-          {userWallet && (
-            <p className="-mb-1.5 pl-1">
-              {userBalance !== undefined ? userBalance.toString() : "loading"}{" "}
-              XRPs
-            </p>
-          )}
-        </div>
-        <div className='right'>
-          {userWallet && userWallet.address ? (
-            <button className='navbar_button' onClick={() => router.push("/login")}>
-              {userWallet.address}
-            </button>
-          ) : (
-            <button className='navbar_button' onClick={() => router.push("/login")}>Login</button>
-          )}
-          {pathname === "/" ? (
-            <button className='navbar_button' onClick={() => router.push(userWallet ? "/dashboard" : "/login")}>
-              Go to Dashboard
-            </button>
-          ) : (
-            <button className='navbar_button' onClick={() => router.push("/")}>
-              Go to Marketplace
-            </button>
-          )}
-        </div>
-      </nav>
-    </div>
+    <FloatingNav className="self-center font-white flex justify-between items-center *:flex-shrink-0 min-w-[800px] flex-shrink-0">
+      <div className='left'>
+        <h1 className='text-xl'>PlanetMarket</h1>
+        {userWallet && (
+          <p className="-mb-1 pl-1.5">
+            {userBalance !== undefined ? userBalance.toString() : "loading"}{" "}
+            XRPs
+          </p>
+        )}
+      </div>
+      <div className='mr-6'>
+        {userWallet && userWallet.address ? (
+          <SpeButton className='navbar_button' onClick={() => router.push("/login")}>
+            {userWallet.address}
+          </SpeButton>
+        ) : (
+          <SpeButton className='navbar_button' onClick={() => router.push("/login")}>Login</SpeButton>
+        )}
+        {pathname === "/" ? (
+          <SpeButton className='navbar_button' onClick={() => router.push(userWallet ? "/dashboard" : "/login")}>
+            Go to Dashboard
+          </SpeButton>
+        ) : (
+          <SpeButton className='navbar_button' onClick={() => router.push("/")}>
+            Go to Marketplace
+          </SpeButton>
+        )}
+      </div>
+    </FloatingNav>
   );
 };
 
